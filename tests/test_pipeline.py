@@ -7,6 +7,8 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from features import window_features
+from backtest import simulate, turnover
+from evaluation import apply_costs, metrics
 from preprocessing import ca_factor, flag_spikes, load_config
 
 cfg = load_config()
@@ -32,4 +34,20 @@ assert np.isclose(out.Beta, 2), out.Beta
 assert np.isclose(out.MaxDrawdown, (1 - idx / idx.cummax()).max())
 assert np.isclose(out.Liquidity, np.log1p(1e6))
 
+# buy-and-hold: A +10% then flat; B no trade day 1 (NaN = unchanged), then +20%
+Rt = pd.DataFrame({"A": [0.10, 0.0], "B": [np.nan, 0.20]}, index=dates[:2])
+ret, end_w = simulate(pd.Series({"A": 0.5, "B": 0.5}), Rt)
+assert np.allclose(ret, [0.05, 0.1 / 1.05]) and np.isclose(end_w.sum(), 1)
+assert np.isclose((1 + ret).prod(), 0.5 * 1.1 + 0.5 * 1.2)            # = 1.15
+assert np.isclose(turnover(pd.Series({"A": 1.0}), pd.Series({"B": 1.0})), 2)  # full switch
+
+# costs hit only the first day of each window, scaled by that window's turnover
+from backtest import STOCK_STRATS
+g = pd.DataFrame({s: [0.0, 0.0] for s in STOCK_STRATS + ["NIFTY50", "NIFTY500"]}, index=dates[:2]).assign(WindowID=1)
+w = pd.DataFrame({"WindowID": [1], **{"Turnover_" + s: [2.0] for s in STOCK_STRATS}})
+n = apply_costs(g, w, 0.01)
+assert np.allclose(n.Proposed, [-0.02, 0]) and (n.NIFTY50 == 0).all()
+
+m = metrics(pd.Series([0.1, -0.5, 0.2]), pd.Series([0.1, -0.5, 0.2]), 0.0)
+assert np.isclose(m["MaxDrawdown"], 0.5) and np.isclose(m["Beta"], 1) and np.isclose(m["CumReturn"], 1.1 * 0.5 * 1.2 - 1)
 print("ok")
