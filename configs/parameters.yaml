@@ -60,3 +60,12 @@ selection:
     Liquidity: 0.10
     Volatility: 0.20
     MaxDrawdown: 0.20
+
+goal_programming:
+  # Goal targets from the project proposal (slide 7). Weighted (non-pre-emptive) GP:
+  # minimise sum_k priority_k * d_k / |target_k| over the unwanted deviations d_k >= 0.
+  targets: {Return: 0.20, Volatility: 0.20, Sharpe: 0.90, Beta: 1.00}
+  priorities: {Return: 1, Volatility: 1, Sharpe: 1, Beta: 1}
+  # Concentration limits: at most 15% (~2.25x equal weight), every selected stock >= 2%.
+  min_weight: 0.02
+  max_weight: 0.15
