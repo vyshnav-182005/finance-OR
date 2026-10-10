@@ -1,0 +1,8 @@
+# Raw Kaggle data and derived panels (~900 MB) - regenerate with src/preprocessing.py
+data/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.vscode/
+.claude/
+results/experiments_log.txt

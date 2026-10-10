@@ -1,0 +1,41 @@
+# Finance-OR parameters. Any change here = a new experiment (CLAUDE.md §27).
+
+paths:
+  scrip_dir: data/SCRIP
+  nifty50: data/INDEX/NIFTY 50.csv
+  symbols: data/NSE Symbols.CSV
+  processed_dir: data/processed
+  features_dir: results/features
+
+preprocessing:
+  # Bad-print excursions: price jumps >25% away and an opposite >25% jump brings it back to
+  # within 5% of the pre-jump close within <= spike_max_len rows. The excursion rows are dropped.
+  spike_min_move: 0.25
+  spike_return_tol: 0.05
+  spike_max_len: 5
+  # Corporate actions (split/bonus/consolidation) are NOT adjusted in the raw data.
+  # A close ratio <= ca_max_ratio (or >= 1.8 for >=2:1 consolidations) across <= ca_max_gap
+  # NIFTY days that matches a standard factor within ca_tol is treated as a corporate action
+  # and the return on that day is neutralised (raw_ratio * factor - 1).
+  ca_max_ratio: 0.70
+  ca_max_gap: 5
+  ca_tol: 0.08
+  ca_factors: [1.5, 2, 2.5, 3, 4, 5, 6, 10, 20]
+
+windows:
+  train_years: 4
+  first_test_year: 2000   # stock data starts 1996-01-01 -> first train window 1996-1999
+  last_test_year: 2021    # 2021 data ends 2021-07-01 (partial test year)
+
+universe:
+  min_obs_frac: 0.80      # valid obs on >= 80% of NIFTY trading days in the training window
+  last_obs_within_days: 21  # must still trade in the last ~1 month of the window (formation date)
+  # Penny-stock exclusion (INR, last training-window close). Sub-5 prices move in tick-size
+  # jumps (0.30 -> 0.45 = +50%) that distort returns/volatility and the CA heuristic.
+  min_price: 5
+
+features:
+  trading_days: 252
+  # Assumption: constant annual risk-free rate ~ long-run average Indian 91-day T-bill
+  # yield over 1996-2020 (ranged roughly 3-12%). No T-bill series is in the dataset.
+  risk_free_rate: 0.07
