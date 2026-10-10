@@ -47,3 +47,16 @@ clustering:
   # (K = 3 or 4 can never satisfy "15 stocks, <= 3 per cluster, >= 5 clusters".)
   n_init: 20
   seed: 42
+
+selection:
+  n_stocks: 15
+  max_per_cluster: 3
+  min_clusters: 5
+  # Score_i = sum_f w_f * sign_f * Z_f ; sign = -1 for Volatility and MaxDrawdown.
+  # Fixed a priori (never tuned on test years). Alternatives are robustness experiments.
+  score_weights:
+    Sharpe: 0.30
+    Return: 0.20
+    Liquidity: 0.10
+    Volatility: 0.20
+    MaxDrawdown: 0.20
