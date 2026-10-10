@@ -39,3 +39,11 @@ features:
   # Assumption: constant annual risk-free rate ~ long-run average Indian 91-day T-bill
   # yield over 1996-2020 (ranged roughly 3-12%). No T-bill series is in the dataset.
   risk_free_rate: 0.07
+
+clustering:
+  k_candidates: [3, 4, 5, 6, 7, 8]   # diagnostics recorded for all
+  # K is chosen per window by max silhouette among candidates that keep the IP feasible:
+  # K >= min_clusters and sum_k min(|cluster k|, max_per_cluster) >= n_stocks.
+  # (K = 3 or 4 can never satisfy "15 stocks, <= 3 per cluster, >= 5 clusters".)
+  n_init: 20
+  seed: 42
