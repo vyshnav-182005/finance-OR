@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finance-OR Backtest Results</title>
+<!-- Built by src/dashboard.py from results/runs/primary — do not edit the generated copy. -->
+<style>
+:root {
+  --font-anthropic-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-anthropic-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --cds-font-size-caption: 0.78rem; --cds-font-size-body: 0.875rem; --cds-font-size-heading: 1rem; --cds-font-size-title: 1.6rem;
+  --cds-font-weight-medium: 600;
+  --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 16px; --cds-gap-lg: 24px; --cds-gap-xl: 32px;
+  --cds-pad-xs: 4px; --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px; --cds-pad-xl: 28px;
+  --cds-radius: 8px; --cds-dur-slow: 300ms;
+  --color-bg: #f9f9f7; --color-panel: #fcfcfb; --color-fg: #0b0b0b; --color-fg-muted: #52514e;
+  --color-border-line: rgba(11, 11, 11, 0.10); --color-ok: #006300; --color-bad: #c42b2b;
+  --cds-surface-popover: #ffffff; --cds-border: rgba(11, 11, 11, 0.14); --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.10);
+  --cds-text-secondary: #52514e;
+  --cds-chart-grid: #e1e0d9; --cds-chart-axis: #c3c2b7; --cds-chart-reference: #898781; --cds-chart-muted: #b4b2a9;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #4a3aa7; --s8: #e34948;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #0d0d0d; --color-panel: #1a1a19; --color-fg: #ffffff; --color-fg-muted: #c3c2b7;
+    --color-border-line: rgba(255, 255, 255, 0.10); --color-ok: #0ca30c; --color-bad: #e66767;
+    --cds-surface-popover: #262624; --cds-border: rgba(255, 255, 255, 0.14); --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --cds-text-secondary: #c3c2b7;
+    --cds-chart-grid: #2c2c2a; --cds-chart-axis: #383835; --cds-chart-reference: #898781; --cds-chart-muted: #5c5b56;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --color-bg: #0d0d0d; --color-panel: #1a1a19; --color-fg: #ffffff; --color-fg-muted: #c3c2b7;
+  --color-border-line: rgba(255, 255, 255, 0.10); --color-ok: #0ca30c; --color-bad: #e66767;
+  --cds-surface-popover: #262624; --cds-border: rgba(255, 255, 255, 0.14); --cds-shadow-popover: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --cds-text-secondary: #c3c2b7;
+  --cds-chart-grid: #2c2c2a; --cds-chart-axis: #383835; --cds-chart-reference: #898781; --cds-chart-muted: #5c5b56;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
+  color-scheme: dark;
+}
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); font-size: 14px; }
+#dash-root { max-width: 1280px; margin-inline: auto; padding: 24px clamp(16px, 3vw, 40px) 48px; }
+.dash-skeleton { min-height: 1em; border-radius: var(--cds-radius); background: var(--cds-chart-grid); animation: fx-pulse 1.2s ease-in-out infinite alternate; }
+@keyframes fx-pulse { to { opacity: .5; } }
+@media (prefers-reduced-motion: reduce) { .dash-skeleton { animation: none; } }
+.fx-built { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: var(--cds-gap-lg); }
+</style>
+<script>/*__D3__*/</script>
+<script>
+// Minimal stand-in for the dashboard runtime the page was written against: all data is
+// embedded at build time, filters are in-page state, the tab is kept in the URL hash.
+window.dash = (() => {
+  const DATA = /*__DATA__*/;
+  const DEFAULTS = { cost: 25, year: 2021, versus: 'NIFTY50' };
+  let params = { ...DEFAULTS };
+  const fns = [];
+  const run = () => fns.forEach((f) => f());
+  let t;
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(run, 150); });
+  return {
+    data: (id) => (id in DATA ? { status: 'ok', data: DATA[id] } : { status: 'error', data: [] }),
+    params: () => ({ ...params }),
+    setParams: (p) => { params = { ...params, ...p }; run(); },
+    resetParams: () => { params = { ...DEFAULTS }; run(); },
+    colors: ['var(--s1)', 'var(--s2)', 'var(--s3)', 'var(--s4)', 'var(--s5)', 'var(--s6)', 'var(--s7)', 'var(--s8)'],
+    onData: (fn) => { fns.push(fn); fn(); },
+    setLink: (id) => history.replaceState(null, '', '#' + id),
+  };
+})();
+</script>
+</head>
+<body>
+<div id="dash-root">
+<style>
+.fx { display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
+.fx-head { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: flex-end; justify-content: space-between; }
+.fx-head > div { min-width: 0; flex: 1 1 28rem; }
+.fx-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.fx-take { margin: var(--cds-gap-xs) 0 0; color: var(--color-fg-muted); max-width: 72ch; line-height: 1.5; }
+.fx-take .fx-m { color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.fx-controls { display: flex; gap: var(--cds-gap-sm); flex-wrap: wrap; align-items: center; }
+.fx-lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); display: flex; gap: var(--cds-gap-xs); align-items: center; }
+.fx-sel { font: inherit; font-size: var(--cds-font-size-body); padding: var(--cds-pad-xs) var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); color: var(--color-fg); }
+.fx-tabs { display: flex; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); overflow-x: auto; }
+.fx-tab { font: inherit; background: none; border: none; border-bottom: 2px solid transparent; padding: var(--cds-pad-sm) var(--cds-pad-md); color: var(--color-fg-muted); cursor: pointer; white-space: nowrap; }
+.fx-tab[aria-selected="true"] { color: var(--color-fg); border-bottom-color: currentColor; }
+.fx-tab:focus-visible, .fx-chip:focus-visible, .fx-seg button:focus-visible, .fx-t th button:focus-visible, .fx-sel:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.fx-page { display: grid; gap: var(--cds-gap-md); }
+.fx-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: var(--cds-gap-md); }
+.fx-grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: var(--cds-gap-md); }
+.fx-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; display: grid; gap: var(--cds-gap-sm); align-content: start; }
+.fx-card h3 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); text-wrap: balance; }
+.fx-note { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; }
+.fx-note .fx-m { color: var(--color-fg); font-variant-numeric: tabular-nums; }
+.fx-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: calc(var(--cds-font-size-title) * 1.35); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.fx-cardhead { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); justify-content: space-between; align-items: flex-start; }
+.fx-cardhead > div:not(.fx-seg) { min-width: 0; display: grid; gap: var(--cds-gap-xs); }
+.fx-chart { position: relative; min-width: 0; }
+.fx-chart svg { display: block; overflow: visible; }
+.fx-tip { position: absolute; z-index: 2; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); display: grid; gap: 2px; min-width: 10rem; }
+.fx-tip-h { color: var(--cds-text-secondary); }
+.fx-tip-r { display: flex; gap: 6px; align-items: center; font-variant-numeric: tabular-nums; }
+.fx-tip-r span:nth-last-child(2) { flex: 1; }
+.fx-chips { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+.fx-chip { font: inherit; font-size: var(--cds-font-size-caption); display: inline-flex; gap: 6px; align-items: center; padding: 2px var(--cds-pad-sm); border: 1px solid var(--color-border-line); border-radius: 999px; background: none; color: var(--color-fg); cursor: pointer; }
+.fx-chip[aria-pressed="false"] { color: var(--color-fg-muted); }
+.fx-chip[aria-pressed="false"] .fx-sw { opacity: .25; }
+.fx-sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; flex: none; }
+.fx-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; }
+.fx-seg button { font: inherit; font-size: var(--cds-font-size-caption); background: none; border: none; padding: var(--cds-pad-xs) var(--cds-pad-sm); color: var(--color-fg-muted); cursor: pointer; }
+.fx-seg button[aria-pressed="true"] { background: var(--color-bg); color: var(--color-fg); }
+.fx-tablewrap { overflow: auto; max-height: 30rem; }
+.fx-t { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-body); }
+.fx-t th { position: sticky; top: 0; z-index: 1; background: var(--color-panel); text-align: right; font-weight: var(--cds-font-weight-medium); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; vertical-align: bottom; }
+.fx-t th button { font: inherit; color: inherit; background: none; border: none; padding: 0; cursor: pointer; text-align: inherit; }
+.fx-t th[aria-sort="ascending"] button::after { content: " ↑"; }
+.fx-t th[aria-sort="descending"] button::after { content: " ↓"; }
+.fx-t td { text-align: right; padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.fx-t .l { text-align: left; }
+.fx-t td.wrap { white-space: normal; min-width: 14rem; }
+.fx-t tr.hl td { background: var(--color-bg); }
+.fx-t tr.hl td:first-child { font-weight: var(--cds-font-weight-medium); }
+.fx-bar { display: inline-block; height: 8px; border-radius: 4px; vertical-align: middle; margin-right: 6px; }
+.fx-pos { color: var(--color-ok); }
+.fx-neg { color: var(--color-bad); }
+.fx-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--cds-gap-md); margin: 0; }
+.fx-facts div { display: grid; gap: 2px; min-width: 0; }
+.fx-facts dt { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.fx-facts dd { margin: 0; font-size: var(--cds-font-size-heading); font-variant-numeric: tabular-nums; }
+.fx-goals { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--cds-gap-sm); }
+.fx-goal { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-sm) var(--cds-pad-md); display: grid; gap: 2px; }
+.fx-goal .v { font-size: var(--cds-font-size-heading); font-variant-numeric: tabular-nums; }
+.fx-pill { font-size: var(--cds-font-size-caption); }
+.fx-fail { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 8rem; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.fx-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+[data-dash-source-state="refreshing"] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+[data-dash-source-state="empty"] { color: transparent; }
+</style>
+
+<div class="fx">
+  <header class="fx-head">
+    <div>
+      <h2 class="fx-title" id="top">NSE walk-forward backtest, 2000 to mid-2021</h2>
+      <p class="fx-take">With <span class="fx-costtxt">0.25%</span> trading costs, the K-Means + Integer + Goal Programming portfolio returned
+        <span class="fx-m" data-source="full_period" data-field="AnnReturn" data-s="Proposed">—</span> a year at a Sharpe ratio of
+        <span class="fx-m" data-source="full_period" data-field="Sharpe" data-s="Proposed">—</span>, against
+        <span class="fx-m" data-source="full_period" data-field="AnnReturn" data-s="NIFTY50">—</span> and
+        <span class="fx-m" data-source="full_period" data-field="Sharpe" data-s="NIFTY50">—</span> for the NIFTY 50.
+        Against plain equal-weight diversification its advantage is lower risk, not a statistically significant gain in return.</p>
+    </div>
+    <div class="fx-controls" style="flex: 0 1 auto">
+      <label class="fx-lab" for="fx-cost">Trading cost
+        <select class="fx-sel" id="fx-cost" data-source="full_period"></select></label>
+    </div>
+  </header>
+
+  <nav class="fx-tabs" role="tablist" aria-label="Sections">
+    <button class="fx-tab" role="tab" data-tab="overview" aria-selected="true">Overview</button>
+    <button class="fx-tab" role="tab" data-tab="years" aria-selected="false">Year by year</button>
+    <button class="fx-tab" role="tab" data-tab="portfolio" aria-selected="false">Portfolio explorer</button>
+    <button class="fx-tab" role="tab" data-tab="stats" aria-selected="false">Statistics</button>
+    <button class="fx-tab" role="tab" data-tab="robustness" aria-selected="false">Robustness</button>
+  </nav>
+
+  <!-- OVERVIEW -->
+  <section class="fx-page" id="overview" role="tabpanel">
+    <div class="fx-kpis">
+      <div class="fx-card" id="kpi-return">
+        <p class="fx-note">Annual return (CAGR), out of sample</p>
+        <div class="fx-big fx-m" data-source="full_period" data-field="AnnReturn" data-s="Proposed">—</div>
+        <p class="fx-note">NIFTY 50 <span class="fx-m" data-source="full_period" data-field="AnnReturn" data-s="NIFTY50">—</span> · equal-weight same 15 <span class="fx-m" data-source="full_period" data-field="AnnReturn" data-s="EW_Same15">—</span></p>
+      </div>
+      <div class="fx-card" id="kpi-sharpe">
+        <p class="fx-note">Sharpe ratio (risk-free 7%)</p>
+        <div class="fx-big fx-m" data-source="full_period" data-field="Sharpe" data-s="Proposed">—</div>
+        <p class="fx-note">NIFTY 50 <span class="fx-m" data-source="full_period" data-field="Sharpe" data-s="NIFTY50">—</span> · equal-weight same 15 <span class="fx-m" data-source="full_period" data-field="Sharpe" data-s="EW_Same15">—</span></p>
+      </div>
+      <div class="fx-card" id="kpi-dd">
+        <p class="fx-note">Maximum drawdown, whole period</p>
+        <div class="fx-big fx-m" data-source="full_period" data-field="MaxDrawdown" data-s="Proposed">—</div>
+        <p class="fx-note">NIFTY 50 <span class="fx-m" data-source="full_period" data-field="MaxDrawdown" data-s="NIFTY50">—</span> · equal-weight same 15 <span class="fx-m" data-source="full_period" data-field="MaxDrawdown" data-s="EW_Same15">—</span></p>
+      </div>
+      <div class="fx-card" id="kpi-vol">
+        <p class="fx-note">Annualised volatility</p>
+        <div class="fx-big fx-m" data-source="full_period" data-field="AnnVol" data-s="Proposed">—</div>
+        <p class="fx-note">NIFTY 50 <span class="fx-m" data-source="full_period" data-field="AnnVol" data-s="NIFTY50">—</span> · equal-weight same 15 <span class="fx-m" data-source="full_period" data-field="AnnVol" data-s="EW_Same15">—</span></p>
+      </div>
+    </div>
+
+    <div class="fx-card" id="wealth-card">
+      <div class="fx-cardhead">
+        <div><h3>Growth of ₹1, net of costs</h3>
+          <p class="fx-note">Weekly closes, log scale. Each year's portfolio is built from the 4 years before it and held, unchanged, for the next year. Click a name to show or hide it.</p></div>
+      </div>
+      <div class="fx-chips" id="fx-legend"></div>
+      <div class="fx-chart dash-skeleton" id="wealth-chart" data-source="wealth_weekly" style="min-height: 360px"></div>
+    </div>
+
+    <div class="fx-card" id="dd-card">
+      <h3>Drawdown from running peak</h3>
+      <p class="fx-note">Worst weekly level below the previous high. Same series as above.</p>
+      <div class="fx-chart dash-skeleton" id="dd-chart" data-source="wealth_weekly" style="min-height: 220px"></div>
+    </div>
+
+    <div class="fx-card" id="strat-card">
+      <h3>All strategies, whole out-of-sample period</h3>
+      <p class="fx-note">Sorted by Sharpe ratio. Click a column to sort. Turnover is the share of the portfolio traded at each yearly rebalance (2.0 = everything replaced).</p>
+      <div class="fx-tablewrap">
+        <table class="fx-t" id="strat-table" data-source="full_period" data-row-key="Strategy,CostBps">
+          <thead><tr>
+            <th class="l" data-field="Strategy"><button type="button">Strategy</button></th>
+            <th data-field="AnnReturn"><button type="button">Return / yr</button></th>
+            <th data-field="AnnVol"><button type="button">Volatility</button></th>
+            <th data-field="Sharpe"><button type="button">Sharpe</button></th>
+            <th data-field="Sortino"><button type="button">Sortino</button></th>
+            <th data-field="MaxDrawdown"><button type="button">Max drawdown</button></th>
+            <th data-field="Beta"><button type="button">Beta</button></th>
+            <th data-field="CumReturn"><button type="button">Total return</button></th>
+            <th data-field="AvgTurnover"><button type="button">Turnover / yr</button></th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- YEARS -->
+  <section class="fx-page" id="years" role="tabpanel" hidden>
+    <div class="fx-card" id="yearbars-card">
+      <div class="fx-cardhead">
+        <div><h3>Test-year return</h3>
+          <p class="fx-note">Each bar is one unseen year. 2021 covers January to June only.</p></div>
+        <label class="fx-lab" for="fx-versus">Compare with <select class="fx-sel" id="fx-versus"></select></label>
+      </div>
+      <div class="fx-chips" id="fx-yb-legend"></div>
+      <div class="fx-chart dash-skeleton" id="yearbars-chart" data-source="per_window" style="min-height: 300px"></div>
+    </div>
+    <div class="fx-card" id="heat-card">
+      <h3>Sharpe ratio by strategy and year</h3>
+      <p class="fx-note">Blue is a positive Sharpe ratio, orange negative; full colour at ±2. Hover a cell for its numbers.</p>
+      <div class="fx-chart dash-skeleton" id="heat-chart" data-source="per_window" style="min-height: 260px"></div>
+    </div>
+    <div class="fx-card" id="rand-card">
+      <h3>Rank against 100 random 15-stock portfolios</h3>
+      <p class="fx-note">Share of random equal-weight portfolios from the same universe that the proposed portfolio beat each year, before costs. The dashed line is the median.</p>
+      <div class="fx-chips" id="fx-rand-legend"></div>
+      <div class="fx-chart dash-skeleton" id="rand-chart" data-source="random_percentile" style="min-height: 240px"></div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section class="fx-page" id="portfolio" role="tabpanel" hidden>
+    <div class="fx-card" id="window-card">
+      <div class="fx-cardhead">
+        <div><h3>One rebalance, from training data to the test year</h3>
+          <p class="fx-note">Everything above the holdings table is estimated on the training window only.</p></div>
+        <label class="fx-lab" for="fx-year">Test year <select class="fx-sel" id="fx-year" data-source="windows"></select></label>
+      </div>
+      <dl class="fx-facts">
+        <div><dt>Training window</dt><dd><span class="fx-m" data-source="windows" data-field="TrainStart">—</span> to <span class="fx-m" data-source="windows" data-field="TrainEnd">—</span></dd></div>
+        <div><dt>Eligible stocks</dt><dd class="fx-m" data-source="windows" data-field="Eligible">—</dd></div>
+        <div><dt>Clusters chosen (K)</dt><dd class="fx-m" data-source="windows" data-field="K">—</dd></div>
+        <div><dt>Silhouette</dt><dd class="fx-m" data-source="windows" data-field="Silhouette">—</dd></div>
+        <div><dt>Turnover at rebalance</dt><dd class="fx-m" data-source="windows" data-field="Turnover_Proposed">—</dd></div>
+        <div><dt>Test-year return</dt><dd class="fx-m" data-source="per_window" data-field="CumReturn" data-s="Proposed">—</dd></div>
+        <div><dt>NIFTY 50 same year</dt><dd class="fx-m" data-source="per_window" data-field="CumReturn" data-s="NIFTY50">—</dd></div>
+      </dl>
+      <p class="fx-note">Goal Programming targets met in training: <span class="fx-m" data-source="windows" data-field="GoalsMet">—</span>. These values are training estimates, so they look much better than the realised test year.</p>
+      <div class="fx-goals" id="fx-goals">
+        <div class="fx-goal"><span class="fx-note">Return, goal ≥ 20%</span><span class="v fx-m" data-source="windows" data-field="GP_Return">—</span><span class="fx-pill" data-goal="GP_Return"></span></div>
+        <div class="fx-goal"><span class="fx-note">Volatility, goal ≤ 20%</span><span class="v fx-m" data-source="windows" data-field="GP_Volatility">—</span><span class="fx-pill" data-goal="GP_Volatility"></span></div>
+        <div class="fx-goal"><span class="fx-note">Sharpe, goal ≥ 0.90</span><span class="v fx-m" data-source="windows" data-field="GP_Sharpe">—</span><span class="fx-pill" data-goal="GP_Sharpe"></span></div>
+        <div class="fx-goal"><span class="fx-note">Beta, goal ≤ 1.00</span><span class="v fx-m" data-source="windows" data-field="GP_Beta">—</span><span class="fx-pill" data-goal="GP_Beta"></span></div>
+      </div>
+    </div>
+
+    <div class="fx-card" id="hold-card">
+      <h3>The 15 holdings and how they did</h3>
+      <p class="fx-note">Weight from Goal Programming (2% to 15%). Score is the Integer Programming selection score. Return, volatility, Sharpe, beta and drawdown are training-window values; the last two columns are the test year. Contribution = weight × test-year return.</p>
+      <div class="fx-tablewrap">
+        <table class="fx-t" id="hold-table" data-source="holdings" data-row-key="Key">
+          <thead><tr>
+            <th class="l" data-field="Stock"><button type="button">Stock</button></th>
+            <th class="l" data-field="Company"><button type="button">Company</button></th>
+            <th data-field="Cluster"><button type="button">Cluster</button></th>
+            <th class="l" data-field="Weight"><button type="button">Weight</button></th>
+            <th data-field="Score"><button type="button">Score</button></th>
+            <th data-field="Return"><button type="button">Train return</button></th>
+            <th data-field="Volatility"><button type="button">Train vol</button></th>
+            <th data-field="Sharpe"><button type="button">Train Sharpe</button></th>
+            <th data-field="Beta"><button type="button">Beta</button></th>
+            <th data-field="MaxDrawdown"><button type="button">Train max DD</button></th>
+            <th data-field="TestReturn"><button type="button">Test-year return</button></th>
+            <th data-field="Contribution"><button type="button">Contribution</button></th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="fx-grid2">
+      <div class="fx-card" id="clus-card">
+        <h3>Behavioural clusters this year</h3>
+        <p class="fx-note">Cluster numbers are arbitrary; the description names features at least half a standard deviation from the window average.</p>
+        <div class="fx-tablewrap">
+          <table class="fx-t" id="clus-table" data-source="cluster_profiles" data-row-key="Key">
+            <thead><tr>
+              <th data-field="Cluster"><button type="button">Cluster</button></th>
+              <th data-field="Size"><button type="button">Stocks</button></th>
+              <th class="l" data-field="Description"><button type="button">Behaviour</button></th>
+              <th data-field="Return"><button type="button">Return</button></th>
+              <th data-field="Volatility"><button type="button">Vol</button></th>
+              <th data-field="Beta"><button type="button">Beta</button></th>
+              <th data-field="MaxDrawdown"><button type="button">Max DD</button></th>
+            </tr></thead><tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="fx-card" id="k-card">
+        <h3>Choosing K</h3>
+        <p class="fx-note">Silhouette score per candidate K. K is the best-scoring value that lets the selection take 15 stocks with at most 3 per cluster from at least 5 clusters; faded bars cannot.</p>
+        <div class="fx-chart dash-skeleton" id="k-chart" data-source="k_diagnostics" style="min-height: 220px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="fx-page" id="stats" role="tabpanel" hidden>
+    <div class="fx-card" id="forest-card">
+      <div class="fx-cardhead">
+        <div><h3>Proposed minus each baseline, per test year</h3>
+          <p class="fx-note" id="forest-note">Dot is the mean yearly difference, line its bootstrap 95% interval. Right of zero favours the proposed portfolio. Computed with 0.25% costs.</p></div>
+        <div class="fx-seg" id="fx-metric" role="group" aria-label="Metric">
+          <button type="button" data-m="Sharpe" aria-pressed="true">Sharpe</button>
+          <button type="button" data-m="AnnReturn" aria-pressed="false">Return</button>
+          <button type="button" data-m="MaxDrawdown" aria-pressed="false">Drawdown</button>
+        </div>
+      </div>
+      <div class="fx-chart dash-skeleton" id="forest-chart" data-source="comparisons" style="min-height: 300px"></div>
+    </div>
+    <div class="fx-card" id="cmp-card">
+      <h3>Paired comparison table</h3>
+      <p class="fx-note">Wins = test years where the proposed portfolio was better. p is the Wilcoxon signed-rank test on the yearly differences. For drawdown a positive difference means the proposed portfolio fell less.</p>
+      <div class="fx-tablewrap">
+        <table class="fx-t" id="cmp-table" data-source="comparisons" data-row-key="Key">
+          <thead><tr>
+            <th class="l" data-field="Baseline"><button type="button">Baseline</button></th>
+            <th class="l" data-field="Metric"><button type="button">Metric</button></th>
+            <th data-field="ProposedWins"><button type="button">Years won</button></th>
+            <th data-field="MeanDiff"><button type="button">Mean diff</button></th>
+            <th data-field="CI95_Low"><button type="button">95% CI low</button></th>
+            <th data-field="CI95_High"><button type="button">95% CI high</button></th>
+            <th data-field="WilcoxonP"><button type="button">p-value</button></th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="fx-card" id="reg-card">
+      <h3>Market regimes</h3>
+      <p class="fx-note">Average test-year Sharpe ratio. A year is Bull if the NIFTY 50 rose, and high-volatility if its volatility was above the median test year. Labels are set after the fact and never used to build portfolios.</p>
+      <div class="fx-chips" id="fx-reg-legend"></div>
+      <div class="fx-chart dash-skeleton" id="reg-chart" data-source="regimes" style="min-height: 280px"></div>
+    </div>
+  </section>
+
+  <!-- ROBUSTNESS -->
+  <section class="fx-page" id="robustness" role="tabpanel" hidden>
+    <div class="fx-card" id="exp-card">
+      <h3>Sharpe ratio when one design choice changes</h3>
+      <p class="fx-note">Each bar is a full re-run of all 22 years with a single change. The dashed line is the NIFTY 50. Computed with 0.25% costs. These runs test sensitivity; none was used to pick the primary model.</p>
+      <div class="fx-chart dash-skeleton" id="exp-chart" data-source="experiments full_period" style="min-height: 380px"></div>
+    </div>
+    <div class="fx-card" id="expt-card">
+      <h3>Experiment details</h3>
+      <p class="fx-note">Shared holdings = average share of each year's 15 stocks that the primary model also held.</p>
+      <div class="fx-tablewrap">
+        <table class="fx-t" id="exp-table" data-source="experiments" data-row-key="Experiment">
+          <thead><tr>
+            <th class="l" data-field="Experiment"><button type="button">Experiment</button></th>
+            <th data-field="AnnReturn"><button type="button">Return / yr</button></th>
+            <th data-field="AnnVol"><button type="button">Volatility</button></th>
+            <th data-field="Sharpe"><button type="button">Sharpe</button></th>
+            <th data-field="Sortino"><button type="button">Sortino</button></th>
+            <th data-field="MaxDrawdown"><button type="button">Max drawdown</button></th>
+            <th data-field="AvgTurnover"><button type="button">Turnover / yr</button></th>
+            <th data-field="SharpeWinsVs_NIFTY50"><button type="button">Sharpe wins vs NIFTY 50</button></th>
+            <th data-field="SharpeWinsVs_EW_Same15"><button type="button">vs equal-weight 15</button></th>
+            <th data-field="OverlapWithPrimary"><button type="button">Shared holdings</button></th>
+          </tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const S = ['Proposed', 'EW_Same15', 'MV_Same15', 'TopSharpe15', 'TopReturn15', 'Random15', 'EW_Universe', 'NIFTY50', 'NIFTY500'];
+const LABEL = { Proposed: 'Proposed (K-Means + IP + GP)', EW_Same15: 'Equal-weight, same 15', MV_Same15: 'Markowitz, same 15',
+  TopSharpe15: 'Top-Sharpe 15', TopReturn15: 'Top-Return 15', Random15: 'Random 15', EW_Universe: 'Equal-weight universe',
+  NIFTY50: 'NIFTY 50', NIFTY500: 'NIFTY 500' };
+const EXP = { primary: 'Primary (silhouette-chosen K)', K5_fixed: 'K fixed at 5', K6_fixed: 'K fixed at 6', K7_fixed: 'K fixed at 7',
+  K8_fixed: 'K fixed at 8', weights_risk: 'Risk-focused score weights', weights_return: 'Return-focused score weights',
+  weights_equal: 'Equal score weights', momentum_features: 'Momentum added to clustering', max2_per_cluster: 'At most 2 stocks per cluster',
+  maxw_10pct: 'Max weight 10%', maxw_25pct_minw_0: 'Max weight 25%, min 0%' };
+const pct = d3.format('.1%'), pct0 = d3.format('.0%'), f2 = d3.format('.2f'), sp = d3.format('+.1%');
+const col = (s) => { const i = S.indexOf(s); return i >= 0 && i < 8 ? dash.colors[i] : 'var(--cds-chart-muted)'; };
+const rowsOf = (id) => { const d = dash.data(id); return d.status === 'ok' ? d.data : null; };
+const root = document.getElementById('dash-root');
+const state = { tab: 'overview', metric: 'Sharpe', visible: new Set(['Proposed', 'EW_Same15', 'MV_Same15', 'EW_Universe', 'NIFTY50']) };
+const params = () => { const p = dash.params(); return { cost: Number(p.cost ?? 25), year: Number(p.year ?? 2021), versus: p.versus || 'NIFTY50' }; };
+const yearLabel = (y) => (y === 2021 ? '2021 (Jan–Jun)' : String(y));
+
+const FMT = { AnnReturn: pct, AnnVol: pct, Sharpe: f2, Sortino: f2, MaxDrawdown: pct, Beta: f2, CumReturn: sp,
+  TrainStart: (v) => v, TrainEnd: (v) => v, Eligible: d3.format(','), K: (v) => v, Silhouette: d3.format('.3f'),
+  GoalsMet: (v) => v + ' of 4', GP_Return: pct, GP_Volatility: pct, GP_Sharpe: f2, GP_Beta: f2, Turnover_Proposed: f2 };
+const GOAL = { GP_Return: (v) => v >= 0.2 - 1e-6, GP_Volatility: (v) => v <= 0.2 + 1e-6, GP_Sharpe: (v) => v >= 0.9 - 1e-6, GP_Beta: (v) => v <= 1 + 1e-6 };
+
+// ---------- small helpers ----------
+const probe = document.createElement('span');
+probe.hidden = true; root.appendChild(probe);
+const resolveColor = (c) => { probe.style.color = c; return getComputedStyle(probe).color; };
+const whereStr = (o) => Object.entries(o).map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+const match = (r, o) => Object.entries(o).every(([k, v]) => String(r[k]) === String(v));
+
+function status(box, ids) {
+  const st = ids.map((id) => dash.data(id).status);
+  if (st.every((s) => s === 'ok')) { box.classList.remove('dash-skeleton'); return true; }
+  if (st.some((s) => s === 'error')) {
+    box.classList.remove('dash-skeleton');
+    const f = document.createElement('div'); f.className = 'fx-fail'; f.textContent = 'Failed to load';
+    box.replaceChildren(f);
+  }
+  return false;
+}
+function newSvg(box, h) {
+  box.querySelector('svg')?.remove();
+  box.querySelector('.fx-fail')?.remove();
+  const w = Math.max(280, box.clientWidth);
+  const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%').attr('height', h).attr('viewBox', `0 0 ${w} ${h}`);
+  return { svg, w };
+}
+function textW(svg, strs) {
+  const t = svg.append('text').style('font-size', 'var(--cds-font-size-caption)');
+  let m = 0;
+  for (const s of strs) { t.text(s); m = Math.max(m, t.node().getComputedTextLength()); }
+  t.remove();
+  return m;
+}
+function styleAxis(g) {
+  g.attr('font-size', null).attr('font-family', null);
+  g.selectAll('text').style('fill', 'var(--color-fg-muted)').style('font-size', 'var(--cds-font-size-caption)');
+  g.selectAll('line').style('stroke', 'var(--cds-chart-grid)');
+  g.select('.domain').remove();
+}
+function tipOf(box) {
+  let t = box.querySelector('.fx-tip');
+  if (!t) { t = document.createElement('div'); t.className = 'fx-tip'; t.hidden = true; box.appendChild(t); }
+  return t;
+}
+function showTip(box, x, y, head, lines) {
+  const t = tipOf(box);
+  t.replaceChildren();
+  const h = document.createElement('div'); h.className = 'fx-tip-h'; h.textContent = head; t.appendChild(h);
+  for (const l of lines) {
+    const r = document.createElement('div'); r.className = 'fx-tip-r';
+    if (l.c) { const sw = document.createElement('span'); sw.className = 'fx-sw'; sw.style.background = l.c; r.appendChild(sw); }
+    const n = document.createElement('span'); n.textContent = l.label;
+    const v = document.createElement('span'); v.textContent = l.v;
+    r.append(n, v); t.appendChild(r);
+  }
+  t.hidden = false;
+  const bw = box.clientWidth, tw = t.offsetWidth, th = t.offsetHeight;
+  let left = x + 14; if (left + tw > bw) left = x - 14 - tw; if (left < 0) left = 0;
+  t.style.left = left + 'px';
+  t.style.top = Math.max(0, Math.min(y - th / 2, box.clientHeight - th)) + 'px';
+}
+const hideTip = (box) => { const t = box.querySelector('.fx-tip'); if (t) t.hidden = true; };
+function chips(el, keys, opts = {}) {
+  el.replaceChildren(...keys.map((k) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'fx-chip';
+    const sw = document.createElement('span'); sw.className = 'fx-sw'; sw.style.background = opts.color ? opts.color(k) : col(k);
+    const n = document.createElement('span'); n.textContent = opts.label ? opts.label(k) : LABEL[k];
+    b.append(sw, n);
+    if (opts.toggle) {
+      b.setAttribute('aria-pressed', String(state.visible.has(k)));
+      b.addEventListener('click', () => { state.visible.has(k) ? state.visible.delete(k) : state.visible.add(k); if (!state.visible.size) state.visible.add('Proposed'); drawOverview(); });
+    } else { b.disabled = true; b.style.cursor = 'default'; }
+    return b;
+  }));
+}
+
+// ---------- tables ----------
+function fillTable(tbl, rows, keyCols, fmts, opts = {}) {
+  const st = tbl._sort || (tbl._sort = { f: opts.sortField || null, dir: opts.sortDir || -1 });
+  tbl._redraw = () => fillTable(tbl, rows, keyCols, fmts, opts);
+  const ths = [...tbl.querySelectorAll('thead th')];
+  if (!tbl._wired) {
+    tbl._wired = true;
+    ths.forEach((th) => th.querySelector('button')?.addEventListener('click', () => {
+      const f = th.dataset.field;
+      st.dir = st.f === f ? -st.dir : (th.classList.contains('l') ? 1 : -1); st.f = f; tbl._redraw();
+    }));
+  }
+  const sorted = rows.slice();
+  if (st.f) {
+    const sk = opts.sortKey?.[st.f] || ((r) => r[st.f]);
+    sorted.sort((a, b) => {
+      const x = sk(a), y = sk(b);
+      if (x == null) return 1; if (y == null) return -1;
+      return (typeof x === 'number' ? x - y : String(x).localeCompare(String(y))) * st.dir;
+    });
+  }
+  ths.forEach((th) => th.setAttribute('aria-sort', th.dataset.field === st.f ? (st.dir > 0 ? 'ascending' : 'descending') : 'none'));
+  const barMax = opts.bar ? d3.max(rows, (r) => r[opts.bar]) : 0;
+  tbl.tBodies[0].replaceChildren(...sorted.map((r) => {
+    const tr = document.createElement('tr');
+    tr.dataset.key = keyCols.length === 1 ? String(r[keyCols[0]]) : keyCols.map((k) => encodeURIComponent(r[k])).join(',');
+    if (opts.hl?.(r)) tr.className = 'hl';
+    for (const th of ths) {
+      const f = th.dataset.field, v = r[f], td = document.createElement('td');
+      if (th.classList.contains('l')) td.className = 'l';
+      if (f === opts.wrap) td.className = 'l wrap';
+      if (f === opts.bar) {
+        const b = document.createElement('span'); b.className = 'fx-bar';
+        b.style.width = (v / barMax) * 64 + 'px'; b.style.background = dash.colors[0];
+        td.appendChild(b);
+      }
+      if (opts.signed?.includes(f) && typeof v === 'number') td.classList.add(v >= 0 ? 'fx-pos' : 'fx-neg');
+      td.append(v == null ? '—' : (fmts[f] ? fmts[f](v, r) : String(v)));
+      tr.appendChild(td);
+    }
+    return tr;
+  }));
+}
+
+// ---------- charts ----------
+function lineChart(box, rows, keys, o) {
+  const h = o.h;
+  const { svg, w } = newSvg(box, h);
+  const data = rows.map((r) => ({ ...r, d: new Date(r.Date) }));
+  const vals = data.flatMap((r) => keys.map((k) => r[k + o.suffix]));
+  const y = o.log ? d3.scaleLog().domain(d3.extent(vals)) : d3.scaleLinear().domain([d3.min(vals), 0]).nice();
+  const ticks = o.log ? [0.25, 0.5, 1, 2, 5, 10, 20, 50, 100].filter((v) => v >= y.domain()[0] * 0.98 && v <= y.domain()[1] * 1.02) : y.ticks(5);
+  const ml = textW(svg, ticks.map(o.yfmt)) + 10, mr = 12, mt = 10, mb = 24;
+  y.range([h - mb, mt]);
+  const x = d3.scaleUtc(d3.extent(data, (r) => r.d), [ml, w - mr]);
+  svg.append('g').attr('transform', `translate(${ml},0)`).call(d3.axisLeft(y).tickValues(ticks).tickFormat(o.yfmt).tickSize(-(w - ml - mr))).call(styleAxis);
+  svg.append('g').attr('transform', `translate(0,${h - mb})`).call(d3.axisBottom(x).ticks(Math.max(2, Math.floor((w - ml) / 80))).tickSizeOuter(0)).call(styleAxis);
+  svg.append('line').attr('x1', ml).attr('x2', w - mr).attr('y1', o.log ? y(1) : y(0)).attr('y2', o.log ? y(1) : y(0)).style('stroke', 'var(--cds-chart-axis)');
+  const order = keys.slice().sort((a, b) => (a === 'Proposed') - (b === 'Proposed'));
+  for (const k of order) {
+    svg.append('path').datum(data).attr('d', d3.line().x((r) => x(r.d)).y((r) => y(r[k + o.suffix])))
+      .style('fill', 'none').style('stroke', col(k)).style('stroke-width', k === 'Proposed' ? 2.5 : 1.5)
+      .style('stroke-linejoin', 'round').style('stroke-linecap', 'round');
+  }
+  const rule = svg.append('line').attr('y1', mt).attr('y2', h - mb).style('stroke', 'var(--cds-chart-reference)').style('opacity', 0);
+  const dots = svg.append('g');
+  const bis = d3.bisector((r) => r.d);
+  svg.append('rect').attr('x', ml).attr('y', 0).attr('width', w - ml - mr).attr('height', h).style('fill', 'transparent')
+    .on('pointermove', (e) => {
+      const [mx] = d3.pointer(e);
+      const r = data[bis.center(data, x.invert(mx))];
+      const cx = x(r.d);
+      rule.attr('x1', cx).attr('x2', cx).style('opacity', 1);
+      dots.selectAll('circle').data(keys).join('circle').attr('cx', cx).attr('cy', (k) => y(r[k + o.suffix])).attr('r', 4)
+        .style('fill', (k) => col(k)).style('stroke', 'var(--color-panel)').style('stroke-width', 2);
+      const ks = keys.slice().sort((a, b) => r[b + o.suffix] - r[a + o.suffix]);
+      showTip(box, cx * box.clientWidth / w, y(r[ks[0] + o.suffix]), 'Week of ' + d3.utcFormat('%b %-d, %Y')(r.d),
+        ks.map((k) => ({ c: col(k), label: LABEL[k], v: o.tfmt(r[k + o.suffix]) })));
+    })
+    .on('pointerleave', () => { rule.style('opacity', 0); dots.selectAll('*').remove(); hideTip(box); });
+}
+
+function groupedBars(box, cats, series, get, o) {
+  const h = o.h;
+  const { svg, w } = newSvg(box, h);
+  const vals = cats.flatMap((c) => series.map((s) => get(c, s))).filter((v) => v != null);
+  const y = d3.scaleLinear().domain([Math.min(0, d3.min(vals)), Math.max(0, d3.max(vals))]).nice();
+  const ticks = y.ticks(5);
+  const ml = textW(svg, ticks.map(o.yfmt)) + 10, mr = 8, mt = 10, mb = 26;
+  y.range([h - mb, mt]);
+  const x = d3.scaleBand(cats, [ml, w - mr]).paddingInner(0.22).paddingOuter(0.1);
+  const xi = d3.scaleBand(series, [0, x.bandwidth()]).padding(0.08);
+  svg.append('g').attr('transform', `translate(${ml},0)`).call(d3.axisLeft(y).tickValues(ticks).tickFormat(o.yfmt).tickSize(-(w - ml - mr))).call(styleAxis);
+  const lw = textW(svg, cats.map(o.xfmt));
+  const step = Math.max(1, Math.ceil((lw + 8) / x.step()));
+  svg.append('g').attr('transform', `translate(0,${h - mb})`).call(d3.axisBottom(x).tickFormat(o.xfmt).tickValues(cats.filter((_, i) => i % step === 0)).tickSize(0).tickPadding(8)).call(styleAxis);
+  const y0 = y(0);
+  for (const s of series) {
+    svg.append('g').selectAll('rect').data(cats.filter((c) => get(c, s) != null)).join('rect')
+      .attr('x', (c) => x(c) + xi(s)).attr('width', xi.bandwidth())
+      .attr('y', (c) => Math.min(y(get(c, s)), y0)).attr('height', (c) => Math.max(1, Math.abs(y(get(c, s)) - y0)))
+      .attr('rx', Math.min(4, xi.bandwidth() / 2)).style('fill', o.color(s));
+  }
+  svg.append('line').attr('x1', ml).attr('x2', w - mr).attr('y1', y0).attr('y2', y0).style('stroke', 'var(--cds-chart-axis)');
+  const hl = svg.append('rect').attr('y', mt).attr('height', h - mb - mt).style('fill', 'var(--cds-chart-grid)').style('opacity', 0).lower();
+  svg.append('g').selectAll('rect').data(cats).join('rect').attr('x', (c) => x(c) - x.step() * x.paddingInner() / 2).attr('width', x.step())
+    .attr('y', 0).attr('height', h).style('fill', 'transparent')
+    .on('pointermove', (e, c) => {
+      hl.attr('x', x(c)).attr('width', x.bandwidth()).style('opacity', 0.5);
+      const top = d3.min(series, (s) => (get(c, s) == null ? h : y(Math.max(0, get(c, s)))));
+      showTip(box, (x(c) + x.bandwidth()) * box.clientWidth / w, top, o.tipHead(c),
+        series.map((s) => ({ c: o.color(s), label: o.label(s), v: get(c, s) == null ? '—' : o.tfmt(get(c, s)) })).concat(o.extra ? o.extra(c) : []));
+    })
+    .on('pointerleave', () => { hl.style('opacity', 0); hideTip(box); });
+}
+
+function heatmap(box, rows) {
+  const years = [...new Set(rows.map((r) => r.TestYear))].sort();
+  const ch = 24, mt = 4, mb = 22;
+  const h = S.length * ch + mt + mb;
+  const { svg, w } = newSvg(box, h);
+  const ml = textW(svg, S.map((s) => LABEL[s])) + 10;
+  const x = d3.scaleBand(years, [ml, w - 4]).padding(0.06);
+  const y = d3.scaleBand(S, [mt, mt + S.length * ch]).padding(0.08);
+  const pos = resolveColor(dash.colors[0]), neg = resolveColor(dash.colors[1]), mid = resolveColor('var(--cds-chart-grid)');
+  const fill = (v) => (v >= 0 ? d3.interpolateRgb(mid, pos)(Math.min(v / 2, 1)) : d3.interpolateRgb(mid, neg)(Math.min(-v / 2, 1)));
+  const by = new Map(rows.map((r) => [r.Strategy + '|' + r.TestYear, r]));
+  svg.append('g').selectAll('text').data(S).join('text').attr('x', ml - 8).attr('y', (s) => y(s) + y.bandwidth() / 2).attr('dy', '0.35em')
+    .attr('text-anchor', 'end').text((s) => LABEL[s]).style('font-size', 'var(--cds-font-size-caption)')
+    .style('fill', (s) => (s === 'Proposed' ? 'var(--color-fg)' : 'var(--color-fg-muted)'));
+  const lw = textW(svg, ['2000']);
+  const step = Math.max(1, Math.ceil((lw + 6) / x.step()));
+  svg.append('g').attr('transform', `translate(0,${mt + S.length * ch})`).call(d3.axisBottom(x).tickValues(years.filter((_, i) => i % step === 0)).tickSize(0).tickPadding(6)).call(styleAxis);
+  const cells = [];
+  for (const s of S) for (const yr of years) { const r = by.get(s + '|' + yr); if (r) cells.push(r); }
+  svg.append('g').selectAll('rect').data(cells).join('rect')
+    .attr('x', (r) => x(r.TestYear)).attr('y', (r) => y(r.Strategy)).attr('width', x.bandwidth()).attr('height', y.bandwidth()).attr('rx', 2)
+    .style('fill', (r) => fill(r.Sharpe))
+    .style('stroke', (r) => (r.Strategy === 'Proposed' ? 'var(--color-fg)' : 'none')).style('stroke-width', 1)
+    .on('pointermove', (e, r) => showTip(box, (x(r.TestYear) + x.bandwidth()) * box.clientWidth / w, y(r.Strategy) + y.bandwidth() / 2,
+      LABEL[r.Strategy] + ' · ' + yearLabel(r.TestYear),
+      [{ label: 'Sharpe', v: f2(r.Sharpe) }, { label: 'Return', v: sp(r.CumReturn) }, { label: 'Volatility', v: pct(r.AnnVol) }, { label: 'Max drawdown', v: pct(r.MaxDrawdown) }]))
+    .on('pointerleave', () => hideTip(box));
+}
+
+function dotsChart(box, rows) {
+  const h = 240;
+  const { svg, w } = newSvg(box, h);
+  const ser = [['ReturnPctile', 'Return', dash.colors[0]], ['SharpePctile', 'Sharpe', dash.colors[2]]];
+  const years = rows.map((r) => r.TestYear);
+  const y = d3.scaleLinear([0, 1], [h - 26, 10]);
+  const ml = textW(svg, ['100%']) + 10;
+  const x = d3.scaleBand(years, [ml, w - 8]).padding(0.2);
+  svg.append('g').attr('transform', `translate(${ml},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(pct0).tickSize(-(w - ml - 8))).call(styleAxis);
+  const lw = textW(svg, ['2000']);
+  const step = Math.max(1, Math.ceil((lw + 6) / x.step()));
+  svg.append('g').attr('transform', `translate(0,${h - 26})`).call(d3.axisBottom(x).tickValues(years.filter((_, i) => i % step === 0)).tickSize(0).tickPadding(8)).call(styleAxis);
+  svg.append('line').attr('x1', ml).attr('x2', w - 8).attr('y1', y(0.5)).attr('y2', y(0.5)).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '4 4');
+  ser.forEach(([f, , c], i) => {
+    const off = (i - 0.5) * Math.min(8, x.bandwidth() / 3);
+    svg.append('g').selectAll('circle').data(rows).join('circle').attr('cx', (r) => x(r.TestYear) + x.bandwidth() / 2 + off)
+      .attr('cy', (r) => y(r[f])).attr('r', 4.5).style('fill', c).style('stroke', 'var(--color-panel)').style('stroke-width', 2);
+  });
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.TestYear)).attr('width', x.bandwidth()).attr('y', 0).attr('height', h).style('fill', 'transparent')
+    .on('pointermove', (e, r) => showTip(box, (x(r.TestYear) + x.bandwidth()) * box.clientWidth / w, y(r.ReturnPctile), yearLabel(r.TestYear),
+      [{ c: ser[0][2], label: 'Beat on return', v: pct0(r.ReturnPctile) }, { c: ser[1][2], label: 'Beat on Sharpe', v: pct0(r.SharpePctile) },
+        { label: 'Proposed return', v: sp(r.ProposedReturn) }, { label: 'Median random return', v: sp(r.RandomMedianReturn) }]))
+    .on('pointerleave', () => hideTip(box));
+}
+
+function kChart(box, rows) {
+  const h = 220;
+  const { svg, w } = newSvg(box, h);
+  const ks = rows.map((r) => 'K = ' + r.K);
+  const y = d3.scaleLinear([0, d3.max(rows, (r) => r.Silhouette) * 1.1], [h - 26, 10]).nice();
+  const ml = textW(svg, y.ticks(4).map(f2)) + 10;
+  const x = d3.scaleBand(ks, [ml, w - 8]).padding(0.3);
+  svg.append('g').attr('transform', `translate(${ml},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(f2).tickSize(-(w - ml - 8))).call(styleAxis);
+  svg.append('g').attr('transform', `translate(0,${h - 26})`).call(d3.axisBottom(x).tickSize(0).tickPadding(8)).call(styleAxis);
+  svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x('K = ' + r.K)).attr('width', x.bandwidth())
+    .attr('y', (r) => y(r.Silhouette)).attr('height', (r) => y(0) - y(r.Silhouette)).attr('rx', 4)
+    .style('fill', (r) => (r.Chosen ? dash.colors[0] : 'var(--cds-chart-muted)')).style('opacity', (r) => (r.IPFeasible ? 1 : 0.35))
+    .on('pointermove', (e, r) => showTip(box, (x('K = ' + r.K) + x.bandwidth()) * box.clientWidth / w, y(r.Silhouette), 'K = ' + r.K + (r.Chosen ? ' (chosen)' : ''),
+      [{ label: 'Silhouette', v: d3.format('.3f')(r.Silhouette) }, { label: 'Cluster sizes', v: r.Sizes.split('|').join(', ') },
+        { label: 'Selection possible', v: r.IPFeasible ? 'Yes' : 'No' }]))
+    .on('pointerleave', () => hideTip(box));
+}
+
+function forest(box, rows, metric) {
+  const fmt = metric === 'Sharpe' ? f2 : (v) => d3.format('+.1%')(v);
+  const fmtS = metric === 'Sharpe' ? d3.format('+.2f') : (v) => d3.format('+.1%')(v);
+  const names = rows.map((r) => LABEL[r.Baseline]);
+  const rh = 34, mt = 8, mb = 26, h = rows.length * rh + mt + mb;
+  const { svg, w } = newSvg(box, h);
+  const right = rows.map((r) => `${r.ProposedWins} of ${r.Periods} yrs · p ${d3.format('.3f')(r.WilcoxonP)}`);
+  const ml = textW(svg, names) + 12, mr = textW(svg, right) + 14;
+  const x = d3.scaleLinear([Math.min(0, d3.min(rows, (r) => r.CI95_Low)), Math.max(0, d3.max(rows, (r) => r.CI95_High))], [ml, w - mr]).nice();
+  const y = d3.scaleBand(rows.map((r) => r.Baseline), [mt, h - mb]).padding(0.3);
+  svg.append('g').attr('transform', `translate(0,${h - mb})`).call(d3.axisBottom(x).ticks(Math.max(3, Math.floor((w - ml - mr) / 70))).tickFormat(fmt).tickSize(-(h - mb - mt))).call(styleAxis);
+  svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', mt).attr('y2', h - mb).style('stroke', 'var(--cds-chart-axis)').style('stroke-width', 1.5);
+  const g = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (r) => `translate(0,${y(r.Baseline) + y.bandwidth() / 2})`);
+  const sig = (r) => r.CI95_Low > 0 || r.CI95_High < 0;
+  g.append('text').attr('x', ml - 10).attr('dy', '0.35em').attr('text-anchor', 'end').text((r) => LABEL[r.Baseline])
+    .style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg)');
+  g.append('line').attr('x1', (r) => x(r.CI95_Low)).attr('x2', (r) => x(r.CI95_High)).style('stroke', (r) => (sig(r) ? dash.colors[0] : 'var(--cds-chart-muted)')).style('stroke-width', 3).style('stroke-linecap', 'round');
+  g.append('circle').attr('cx', (r) => x(r.MeanDiff)).attr('r', 6).style('fill', (r) => (sig(r) ? dash.colors[0] : 'var(--cds-chart-muted)')).style('stroke', 'var(--color-panel)').style('stroke-width', 2);
+  g.append('text').attr('x', w - mr + 10).attr('dy', '0.35em').text((r, i) => right[i]).style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg-muted)');
+  g.append('rect').attr('x', 0).attr('y', -rh / 2).attr('width', w).attr('height', rh).style('fill', 'transparent')
+    .on('pointermove', (e, r) => showTip(box, x(r.CI95_High) * box.clientWidth / w, y(r.Baseline) + y.bandwidth() / 2, 'Proposed vs ' + LABEL[r.Baseline],
+      [{ label: 'Mean yearly difference', v: fmtS(r.MeanDiff) }, { label: 'Median difference', v: fmtS(r.MedianDiff) },
+        { label: '95% interval', v: fmtS(r.CI95_Low) + ' to ' + fmtS(r.CI95_High) }, { label: 'Years won', v: r.ProposedWins + ' of ' + r.Periods },
+        { label: 'Wilcoxon p', v: d3.format('.3f')(r.WilcoxonP) }]))
+    .on('pointerleave', () => hideTip(box));
+}
+
+function expBars(box, rows, ref) {
+  const rh = 30, mt = 8, mb = 26, h = rows.length * rh + mt + mb;
+  const { svg, w } = newSvg(box, h);
+  const names = rows.map((r) => EXP[r.Experiment] || r.Experiment);
+  const ml = textW(svg, names) + 12, mr = textW(svg, ['0.00']) + 12;
+  const x = d3.scaleLinear([0, Math.max(d3.max(rows, (r) => r.Sharpe), ref ?? 0)], [ml, w - mr]).nice();
+  const y = d3.scaleBand(rows.map((r) => r.Experiment), [mt, h - mb]).padding(0.25);
+  svg.append('g').attr('transform', `translate(0,${h - mb})`).call(d3.axisBottom(x).ticks(5).tickFormat(f2).tickSize(-(h - mb - mt))).call(styleAxis);
+  const g = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (r) => `translate(0,${y(r.Experiment)})`);
+  g.append('text').attr('x', ml - 10).attr('y', y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end').text((r) => EXP[r.Experiment] || r.Experiment)
+    .style('font-size', 'var(--cds-font-size-caption)').style('fill', (r) => (r.Experiment === 'primary' ? 'var(--color-fg)' : 'var(--color-fg-muted)'));
+  g.append('rect').attr('x', ml).attr('width', (r) => Math.max(1, x(r.Sharpe) - ml)).attr('height', y.bandwidth()).attr('rx', 4)
+    .style('fill', (r) => (r.Experiment === 'primary' ? dash.colors[0] : 'var(--cds-chart-muted)'));
+  g.append('text').attr('x', (r) => x(r.Sharpe) + 6).attr('y', y.bandwidth() / 2).attr('dy', '0.35em').text((r) => f2(r.Sharpe))
+    .style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg)');
+  g.append('rect').attr('x', 0).attr('width', w).attr('height', y.bandwidth()).style('fill', 'transparent')
+    .on('pointermove', (e, r) => showTip(box, x(r.Sharpe) * box.clientWidth / w, y(r.Experiment) + y.bandwidth() / 2, EXP[r.Experiment] || r.Experiment,
+      [{ label: 'Sharpe', v: f2(r.Sharpe) }, { label: 'Return / yr', v: pct(r.AnnReturn) }, { label: 'Max drawdown', v: pct(r.MaxDrawdown) },
+        { label: 'Sharpe wins vs NIFTY 50', v: r.SharpeWinsVs_NIFTY50 }, { label: 'Shared holdings', v: r.OverlapWithPrimary == null ? '—' : pct0(r.OverlapWithPrimary) }]))
+    .on('pointerleave', () => hideTip(box));
+  if (ref != null) {
+    svg.append('line').attr('x1', x(ref)).attr('x2', x(ref)).attr('y1', mt).attr('y2', h - mb)
+      .style('stroke', 'var(--cds-chart-reference)').style('stroke-width', 1.5).style('stroke-dasharray', '5 4');
+    svg.append('text').attr('x', x(ref) + 4).attr('y', h - mb - 4).text('NIFTY 50 ' + f2(ref))
+      .style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg-muted)');
+  }
+}
+
+// ---------- marks ----------
+function fillMarks() {
+  const { cost, year } = params();
+  root.querySelectorAll('.fx-m[data-source][data-field]').forEach((el) => {
+    const id = el.dataset.source, f = el.dataset.field;
+    const cond = id === 'full_period' ? { Strategy: el.dataset.s, CostBps: cost }
+      : id === 'per_window' ? { TestYear: year, Strategy: el.dataset.s, CostBps: cost } : { TestYear: year };
+    el.dataset.where = whereStr(cond);
+    const rows = rowsOf(id);
+    const r = rows && rows.find((x) => match(x, cond));
+    el.textContent = r && r[f] != null ? (FMT[f] ? FMT[f](r[f]) : String(r[f])) : '—';
+    el.classList.toggle('dash-skeleton', !rows && dash.data(id).status === 'loading');
+  });
+  const w = rowsOf('windows');
+  const r = w && w.find((x) => x.TestYear === year);
+  root.querySelectorAll('[data-goal]').forEach((el) => {
+    if (!r) { el.textContent = ''; return; }
+    const ok = GOAL[el.dataset.goal](r[el.dataset.goal]);
+    el.textContent = ok ? '✓ Met' : '✕ Missed';
+    el.className = 'fx-pill ' + (ok ? 'fx-pos' : 'fx-neg');
+  });
+  root.querySelectorAll('.fx-costtxt').forEach((el) => { el.textContent = d3.format('.2~%')(cost / 1e4); });
+}
+
+// ---------- controls ----------
+const costSel = document.getElementById('fx-cost'), yearSel = document.getElementById('fx-year'), vsSel = document.getElementById('fx-versus');
+costSel.addEventListener('change', () => dash.setParams({ cost: Number(costSel.value) }));
+yearSel.addEventListener('change', () => dash.setParams({ year: Number(yearSel.value) }));
+vsSel.addEventListener('change', () => dash.setParams({ versus: vsSel.value }));
+function syncControls() {
+  const p = params();
+  const fp = rowsOf('full_period');
+  if (fp && costSel.options.length === 0) {
+    const bps = [...new Set(fp.map((r) => r.CostBps))].sort((a, b) => a - b);
+    costSel.replaceChildren(...bps.map((b) => new Option(d3.format('.2~%')(b / 1e4) + ' per trade', String(b))));
+  }
+  costSel.value = String(p.cost);
+  const w = rowsOf('windows');
+  if (w && yearSel.options.length === 0) yearSel.replaceChildren(...w.map((r) => new Option(yearLabel(r.TestYear), String(r.TestYear))));
+  yearSel.value = String(p.year);
+  if (vsSel.options.length === 0) vsSel.replaceChildren(...S.filter((s) => s !== 'Proposed').map((s) => new Option(LABEL[s], s)));
+  vsSel.value = p.versus;
+}
+document.getElementById('fx-metric').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-m]'); if (!b) return;
+  state.metric = b.dataset.m;
+  document.querySelectorAll('#fx-metric button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+  drawStats();
+});
+
+// ---------- pages ----------
+function drawOverview() {
+  const { cost } = params();
+  const keys = S.filter((s) => state.visible.has(s));
+  chips(document.getElementById('fx-legend'), S, { toggle: true });
+  const wk = rowsOf('wealth_weekly');
+  const wb = document.getElementById('wealth-chart'), db = document.getElementById('dd-chart');
+  if (status(wb, ['wealth_weekly']) && wk) {
+    const rows = wk.filter((r) => r.CostBps === cost);
+    lineChart(wb, rows, keys, { h: 360, log: true, suffix: '', yfmt: (v) => d3.format('~g')(v) + '×', tfmt: (v) => f2(v) + '×' });
+  }
+  if (status(db, ['wealth_weekly']) && wk) {
+    const rows = wk.filter((r) => r.CostBps === cost);
+    lineChart(db, rows, keys, { h: 220, log: false, suffix: '_DD', yfmt: pct0, tfmt: pct });
+  }
+  const fp = rowsOf('full_period');
+  if (fp) fillTable(document.getElementById('strat-table'), fp.filter((r) => r.CostBps === cost), ['Strategy', 'CostBps'],
+    { Strategy: (v) => LABEL[v], AnnReturn: pct, AnnVol: pct, Sharpe: f2, Sortino: f2, MaxDrawdown: pct, Beta: f2, CumReturn: d3.format('+,.0%'), AvgTurnover: f2 },
+    { sortField: 'Sharpe', hl: (r) => r.Strategy === 'Proposed' });
+}
+function drawYears() {
+  const { cost, versus } = params();
+  const pw = rowsOf('per_window');
+  const yb = document.getElementById('yearbars-chart'), hb = document.getElementById('heat-chart'), rb = document.getElementById('rand-chart');
+  chips(document.getElementById('fx-yb-legend'), ['Proposed', versus], { color: (s) => (s === 'Proposed' ? dash.colors[0] : 'var(--cds-chart-muted)') });
+  if (status(yb, ['per_window']) && pw) {
+    const rows = pw.filter((r) => r.CostBps === cost);
+    const m = new Map(rows.map((r) => [r.Strategy + '|' + r.TestYear, r.CumReturn]));
+    const years = [...new Set(rows.map((r) => r.TestYear))].sort();
+    groupedBars(yb, years, ['Proposed', versus], (c, s) => m.get(s + '|' + c), {
+      h: 300, yfmt: pct0, xfmt: String, tfmt: sp, tipHead: yearLabel, label: (s) => LABEL[s],
+      color: (s) => (s === 'Proposed' ? dash.colors[0] : 'var(--cds-chart-muted)'),
+      extra: (c) => [{ label: 'Difference', v: d3.format('+.1%')(m.get('Proposed|' + c) - m.get(versus + '|' + c)) }] });
+  }
+  if (status(hb, ['per_window']) && pw) heatmap(hb, pw.filter((r) => r.CostBps === cost));
+  chips(document.getElementById('fx-rand-legend'), ['Return', 'Sharpe'], { label: (k) => 'Beat on ' + k.toLowerCase(), color: (k) => (k === 'Return' ? dash.colors[0] : dash.colors[2]) });
+  const rp = rowsOf('random_percentile');
+  if (status(rb, ['random_percentile']) && rp) dotsChart(rb, rp);
+}
+function drawPortfolio() {
+  const { year } = params();
+  const h = rowsOf('holdings');
+  if (h) fillTable(document.getElementById('hold-table'), h.filter((r) => r.TestYear === year), ['Key'],
+    { Stock: String, Company: String, Cluster: String, Weight: pct, Score: f2, Return: pct, Volatility: pct, Sharpe: f2, Beta: f2, MaxDrawdown: pct, TestReturn: sp, Contribution: d3.format('+.2%') },
+    { sortField: 'Weight', bar: 'Weight', signed: ['TestReturn', 'Contribution'] });
+  const cp = rowsOf('cluster_profiles');
+  if (cp) fillTable(document.getElementById('clus-table'), cp.filter((r) => r.TestYear === year), ['Key'],
+    { Cluster: String, Size: String, Description: String, Return: pct, Volatility: pct, Beta: f2, MaxDrawdown: pct },
+    { sortField: 'Cluster', sortDir: 1, wrap: 'Description' });
+  const kb = document.getElementById('k-chart');
+  const kd = rowsOf('k_diagnostics');
+  if (status(kb, ['k_diagnostics']) && kd) kChart(kb, kd.filter((r) => r.TestYear === year));
+}
+function drawStats() {
+  const c = rowsOf('comparisons');
+  const fb = document.getElementById('forest-chart');
+  if (status(fb, ['comparisons']) && c) forest(fb, c.filter((r) => r.Metric === state.metric), state.metric);
+  document.getElementById('forest-note').textContent = 'Dot is the mean yearly difference, line its bootstrap 95% interval; blue where the interval excludes zero. Right of zero favours the proposed portfolio'
+    + (state.metric === 'MaxDrawdown' ? ' (a smaller drawdown).' : '.') + ' Computed with 0.25% costs.';
+  if (c) fillTable(document.getElementById('cmp-table'), c, ['Key'],
+    { Baseline: (v) => LABEL[v], Metric: (v) => ({ AnnReturn: 'Return', Sharpe: 'Sharpe', MaxDrawdown: 'Drawdown' }[v] || v),
+      ProposedWins: (v, r) => v + ' of ' + r.Periods,
+      MeanDiff: (v, r) => (r.Metric === 'Sharpe' ? d3.format('+.2f')(v) : d3.format('+.1%')(v)),
+      CI95_Low: (v, r) => (r.Metric === 'Sharpe' ? d3.format('+.2f')(v) : d3.format('+.1%')(v)),
+      CI95_High: (v, r) => (r.Metric === 'Sharpe' ? d3.format('+.2f')(v) : d3.format('+.1%')(v)),
+      WilcoxonP: d3.format('.3f') },
+    { sortField: 'WilcoxonP', sortDir: 1 });
+  const rg = rowsOf('regimes');
+  const rb = document.getElementById('reg-chart');
+  const strats = ['Proposed', 'EW_Same15', 'EW_Universe', 'NIFTY50'];
+  chips(document.getElementById('fx-reg-legend'), strats);
+  if (status(rb, ['regimes']) && rg) {
+    const m = new Map(rg.map((r) => [r.Regime + '|' + r.Strategy, r]));
+    const regs = ['Bull', 'Bear', 'HighVol', 'LowVol'];
+    const name = { Bull: 'Bull years', Bear: 'Bear years', HighVol: 'High-volatility years', LowVol: 'Low-volatility years' };
+    groupedBars(rb, regs, strats, (c, s) => m.get(c + '|' + s)?.MeanSharpe, {
+      h: 280, yfmt: f2, xfmt: (c) => name[c] + ' (' + (m.get(c + '|Proposed')?.Years ?? '') + ')', tfmt: f2,
+      tipHead: (c) => name[c] + ', ' + (m.get(c + '|Proposed')?.Years ?? '') + ' test years', label: (s) => LABEL[s], color: col,
+      extra: (c) => [{ label: 'Proposed avg return', v: pct(m.get(c + '|Proposed')?.MeanAnnReturn) }] });
+  }
+}
+function drawRobust() {
+  const e = rowsOf('experiments'), fp = rowsOf('full_period');
+  const eb = document.getElementById('exp-chart');
+  if (status(eb, ['experiments', 'full_period']) && e && fp) {
+    const ref = fp.find((r) => r.Strategy === 'NIFTY50' && r.CostBps === 25)?.Sharpe;
+    expBars(eb, e, ref);
+  }
+  if (e) fillTable(document.getElementById('exp-table'), e, ['Experiment'],
+    { Experiment: (v) => EXP[v] || v, AnnReturn: pct, AnnVol: pct, Sharpe: f2, Sortino: f2, MaxDrawdown: pct, AvgTurnover: f2,
+      SharpeWinsVs_NIFTY50: String, SharpeWinsVs_EW_Same15: String, OverlapWithPrimary: pct0 },
+    { hl: (r) => r.Experiment === 'primary', sortKey: { SharpeWinsVs_NIFTY50: (r) => parseInt(r.SharpeWinsVs_NIFTY50), SharpeWinsVs_EW_Same15: (r) => parseInt(r.SharpeWinsVs_EW_Same15) } });
+}
+const DRAW = { overview: drawOverview, years: drawYears, portfolio: drawPortfolio, stats: drawStats, robustness: drawRobust };
+
+const tabs = [...document.querySelectorAll('.fx-tab')];
+function showTab(id, link = true) {
+  if (!DRAW[id]) return;
+  state.tab = id;
+  tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === id)));
+  Object.keys(DRAW).forEach((k) => { document.getElementById(k).hidden = k !== id; });
+  if (link) dash.setLink(id);
+  DRAW[id]();
+}
+tabs.forEach((t) => t.addEventListener('click', () => showTab(t.dataset.tab)));
+const initial = location.hash.slice(1);
+if (DRAW[initial]) showTab(initial, false);
+window.scrollTo(0, 0);   // a #tab link names a tab, not a scroll position
+
+dash.onData(() => {
+  syncControls();
+  fillMarks();
+  DRAW[state.tab]();
+});
+</script>
+<p class="fx-built">Built /*__BUILT__*/ from results/runs/primary by <code>python src/dashboard.py</code>. All figures are out-of-sample unless labelled as training estimates.</p>
+</div>
+</body>
+</html>
