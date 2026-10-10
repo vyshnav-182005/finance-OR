@@ -69,3 +69,11 @@ goal_programming:
   # Concentration limits: at most 15% (~2.25x equal weight), every selected stock >= 2%.
   min_weight: 0.02
   max_weight: 0.15
+
+backtest:
+  # One-way cost per unit of turnover (sum |w_new - w_drifted|). 0.25% ~ brokerage + STT
+  # + stamp duty + exchange fees + modest impact for Indian delivery trades.
+  cost_rate: 0.0025
+  cost_rates_sensitivity: [0.0, 0.001, 0.0025, 0.005, 0.01]
+  random_draws: 100
+  random_seed: 7
