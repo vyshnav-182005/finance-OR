@@ -70,7 +70,12 @@ def goal_weights(mu, beta, cov, g, rf):
     bounds = [(g["min_weight"], g["max_weight"])] * n + [(0, None)] * 4
     res = minimize(obj, np.r_[w0, d0], jac=obj_jac, method="SLSQP", bounds=bounds, constraints=cons,
                    options={"maxiter": 500, "ftol": 1e-10})
-    if not res.success:
+    # SLSQP mode 8 ("positive directional derivative") = no further descent step at a point that
+    # can already be optimal; accept it only if that point satisfies every constraint and bound.
+    ok_at_stall = res.status == 8 and all(abs(c["fun"](res.x)) <= 1e-6 if c["type"] == "eq"
+                                          else c["fun"](res.x) >= -1e-6 for c in cons) \
+        and all(lo - 1e-9 <= x <= (hi if hi is not None else np.inf) + 1e-9 for x, (lo, hi) in zip(res.x, bounds))
+    if not (res.success or ok_at_stall):
         raise RuntimeError(f"GP failed: {res.message}")
     w = np.clip(res.x[:n], 0, None)
     w /= w.sum()

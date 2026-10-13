@@ -11,6 +11,7 @@ import pandas as pd
 
 from backtest import load_data, run, with_overrides
 from evaluation import evaluate
+from integer_selection import v2_rules
 from preprocessing import ROOT, load_config
 
 W = lambda sh, re, li, vo, dd: {"score_weights": {"Sharpe": sh, "Return": re, "Liquidity": li,
@@ -29,6 +30,15 @@ EXPERIMENTS = {
     "max2_per_cluster": {"overrides": {"selection": {"max_per_cluster": 2}}},
     "maxw_10pct": {"overrides": {"goal_programming": {"max_weight": 0.10}}},
     "maxw_25pct_minw_0": {"overrides": {"goal_programming": {"max_weight": 0.25, "min_weight": 0.0}}},
+    # EXTENSION v2 (selection_v2): slack-adjusted, cluster-quality-aware selection. Motivated by
+    # the zero-slack constraint flaw, not by results; every N is reported. In v2 runs the
+    # TopSharpe15/TopReturn15/Random15 baselines hold N stocks (same N as the proposed model).
+    **{f"v2_N{n}": {"v2": {"n_stocks": n}} for n in (15, 10, 12, 20)},
+    "v2_N15_slack_only": {"v2": {"exclude_negative_sharpe_clusters": False}},
+    # v3 = v2 + exclusion-aware K choice (fixes v2's K=4 interaction, where the exclusion could
+    # never apply and every cluster was again forced to supply >= 3 stocks). Rule fixed a priori.
+    # A v3 slack-only run would equal v2_N15_slack_only (no exclusion -> nothing to be aware of).
+    **{f"v3_N{n}": {"v2": {"n_stocks": n, "exclusion_aware_k": True}} for n in (15, 10, 12, 20)},
 }
 
 
@@ -51,9 +61,15 @@ def main(names):
     base = load_config()
     data = load_data(base)
     rows, prim = [], None
+    prim_file = ROOT / "results/runs/primary/portfolios.csv"
+    if "primary" not in names and prim_file.exists():
+        p = pd.read_csv(prim_file)
+        prim = p[p.Strategy == "Proposed"].groupby("WindowID").Stock.apply(set)
     for name in names:
         e = EXPERIMENTS[name]
         cfg = with_overrides(base, e.get("overrides"))
+        if "v2" in e:
+            cfg["selection"] = v2_rules({**base["selection_v2"], **e["v2"]}, cfg["selection"])
         out = run(cfg, data, name=name, k=e.get("k"), momentum=e.get("momentum", False))
         res = evaluate(name, cfg, make_plots=(name == "primary"))
         port = out["portfolios"]
@@ -62,7 +78,11 @@ def main(names):
             prim = res["holdings"].groupby("WindowID").Stock.apply(set)
         rows.append(summarise(name, res, prim))
     s = pd.DataFrame(rows)
-    s.to_csv(ROOT / "results/experiments_summary.csv", index=False, float_format="%.4f")
+    out = ROOT / "results/experiments_summary.csv"
+    if out.exists():                       # keep rows of experiments not re-run now
+        old = pd.read_csv(out)
+        s = pd.concat([old[~old.Experiment.isin(s.Experiment)], s], ignore_index=True)
+    s.to_csv(out, index=False, float_format="%.4f")
     print(s.round(3).to_string(index=False))
 
 

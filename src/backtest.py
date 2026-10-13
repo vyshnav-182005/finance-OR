@@ -39,7 +39,7 @@ import pandas as pd
 from clustering import ZCOLS, cluster_window
 from features import FEATURES
 from goal_programming import goal_weights, max_sharpe_weights, train_cov
-from integer_selection import select_stocks, selection_score
+from integer_selection import select_with_quality, selection_score
 from preprocessing import ROOT, load_config, load_nifty
 
 STOCK_STRATS = ["Proposed", "EW_Same15", "MV_Same15", "TopSharpe15", "TopReturn15", "Random15",
@@ -85,8 +85,14 @@ def construct(feat, R1_train, cfg, wid, k=None, zcols=None):
     feat = feat.reset_index(drop=True)
     labels, k, diag = cluster_window(feat, cfg, k=k, zcols=zcols)
     score = selection_score(feat, s["score_weights"])
-    sel, ip_status = select_stocks(score, labels, s)
+    sel, ip_status, q_info = select_with_quality(score, labels, feat.Sharpe, s)
     chosen = feat[sel]
+    n = s["n_stocks"]
+    # GP weight bounds must admit sum w = 1 for n stocks; widen (and record) only if they cannot.
+    lims = (min(g["min_weight"], 1 / n), max(g["max_weight"], 1 / n))
+    if lims != (g["min_weight"], g["max_weight"]):
+        print(f"  weight limits {g['min_weight']}-{g['max_weight']} infeasible for N={n}; using {lims}")
+        g = {**g, "min_weight": lims[0], "max_weight": lims[1]}
 
     cov = train_cov(R1_train[chosen.Stock], f["trading_days"])
     mu, beta = chosen.Return.to_numpy(), chosen.Beta.to_numpy()
@@ -95,7 +101,6 @@ def construct(feat, R1_train, cfg, wid, k=None, zcols=None):
 
     eq = lambda stocks: pd.Series(1 / len(stocks), index=list(stocks))
     rng = np.random.default_rng(cfg["backtest"]["random_seed"] + wid)
-    n = s["n_stocks"]
     W = {
         "Proposed": pd.Series(w_gp, index=chosen.Stock),
         "EW_Same15": eq(chosen.Stock),
@@ -106,11 +111,15 @@ def construct(feat, R1_train, cfg, wid, k=None, zcols=None):
         "EW_Universe": eq(feat.Stock),
     }
     sizes = np.bincount(labels, minlength=k)
-    rec = {"K": k, "ClusterSizes": "|".join(map(str, sizes)),
+    rec = {"N": n, "MaxPerCluster": s["max_per_cluster"], "MinClusters": s["min_clusters"],
+           "MinWeight": g["min_weight"], "MaxWeight": g["max_weight"], **q_info,
+           "K": k, "ClusterSizes": "|".join(map(str, sizes)),
            "ClustersSelected": labels[sel].nunique(), "MaxPerClusterSelected": labels[sel].value_counts().max(),
            "IP_Status": ip_status, "IP_Objective": score[sel].sum(), **info}
     if diag is not None:
         rec["Silhouette"] = diag.set_index("K").Silhouette[k]
+        if "ExclusionFeasible" in diag:
+            rec["KExclusionFeasible"] = bool(diag.set_index("K").ExclusionFeasible[k])
     detail = pd.concat([
         pd.DataFrame({"Strategy": name, "Stock": w.index, "Weight": w.to_numpy()}) for name, w in W.items()
         if name != "EW_Universe"])

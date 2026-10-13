@@ -25,12 +25,23 @@ def fit_kmeans(Z, k, c):
 
 
 def ip_feasible(labels, k, s):
-    """Can the IP pick n_stocks with <= max_per_cluster per cluster and >= min_clusters clusters?"""
+    """Can the IP pick n_stocks with <= max_per_cluster per cluster and >= min_clusters clusters?
+    s = the run's active selection rules (v2 rules in v2 runs). The v2 cluster-quality exclusion
+    is not part of this check: it always has a fallback to these rules (integer_selection)."""
     sizes = np.bincount(labels, minlength=k)
     return k >= s["min_clusters"] and np.minimum(sizes, s["max_per_cluster"]).sum() >= s["n_stocks"]
 
 
-def k_diagnostics(Z, c, s):
+def exclusion_feasible(labels, k, sharpe, s):
+    """v3: is the IP feasible once clusters with mean raw training Sharpe < 0 are excluded
+    (>= min_eligible_clusters eligible, and they can hold n_stocks under max_per_cluster)?"""
+    sizes = np.bincount(labels, minlength=k)
+    ok = np.bincount(labels, weights=sharpe, minlength=k) / sizes >= 0
+    return (ok.sum() >= max(s["min_eligible_clusters"], s["min_clusters"])
+            and np.minimum(sizes[ok], s["max_per_cluster"]).sum() >= s["n_stocks"])
+
+
+def k_diagnostics(Z, c, s, sharpe=None):
     rows, models = [], {}
     for k in c["k_candidates"]:
         km = fit_kmeans(Z, k, c)
@@ -38,13 +49,18 @@ def k_diagnostics(Z, c, s):
         rows.append({"K": k, "Silhouette": silhouette_score(Z, km.labels_), "Inertia": km.inertia_,
                      "MinSize": sizes.min(), "MaxSize": sizes.max(), "Sizes": "|".join(map(str, sizes)),
                      "IPFeasible": ip_feasible(km.labels_, k, s)})
+        if s.get("exclusion_aware_k"):
+            rows[-1]["ExclusionFeasible"] = rows[-1]["IPFeasible"] and exclusion_feasible(km.labels_, k, sharpe, s)
         models[k] = km
     return pd.DataFrame(rows), models
 
 
 def choose_k(diag):
-    """Max silhouette among IP-feasible K. Training data only."""
+    """Max silhouette among IP-feasible K. Training data only. v3 (ExclusionFeasible column):
+    among K where the cluster-quality exclusion is feasible, if any; else IP-feasible K."""
     ok = diag[diag.IPFeasible]
+    if "ExclusionFeasible" in diag and diag.ExclusionFeasible.any():
+        ok = diag[diag.ExclusionFeasible]
     if ok.empty:
         raise ValueError("no IP-feasible K among candidates")
     return int(ok.loc[ok.Silhouette.idxmax(), "K"])
@@ -57,7 +73,7 @@ def cluster_window(feat, cfg, k=None, zcols=None):
     c, s = cfg["clustering"], cfg["selection"]
     Z = feat[zcols or ZCOLS].to_numpy()
     if k is None:
-        diag, models = k_diagnostics(Z, c, s)
+        diag, models = k_diagnostics(Z, c, s, feat.Sharpe.to_numpy())
         k = choose_k(diag)
         km = models[k]
     else:

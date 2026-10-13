@@ -61,6 +61,20 @@ selection:
     Volatility: 0.20
     MaxDrawdown: 0.20
 
+# EXTENSION (not the primary model): slack-adjusted, cluster-quality-aware selection.
+# Motivated by a constraint-design flaw in `selection`: K=5 x max 3 = 15 = n_stocks leaves zero
+# slack, forcing 3 picks from every cluster however poor. Defaults fixed a priori, never tuned
+# on test years. Used only by the v2_* runs in experiments.py; score_weights come from `selection`.
+selection_v2:
+  n_stocks: 15
+  max_per_cluster: auto                    # auto = ceil(n_stocks / 4)
+  min_clusters: 4
+  exclude_negative_sharpe_clusters: true   # cluster mean raw training Sharpe < 0 -> x_i = 0
+  min_eligible_clusters: 4                 # fewer eligible clusters -> drop exclusion (fallback)
+  # v3 runs set this true: K = max silhouette among K where the exclusion is feasible (enough
+  # eligible clusters and capacity for N); only if no such K exists fall back to slack-only K.
+  exclusion_aware_k: false
+
 goal_programming:
   # Goal targets from the project proposal (slide 7). Weighted (non-pre-emptive) GP:
   # minimise sum_k priority_k * d_k / |target_k| over the unwanted deviations d_k >= 0.

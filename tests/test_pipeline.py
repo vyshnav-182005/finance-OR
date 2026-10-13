@@ -50,4 +50,33 @@ assert np.allclose(n.Proposed, [-0.02, 0]) and (n.NIFTY50 == 0).all()
 
 m = metrics(pd.Series([0.1, -0.5, 0.2]), pd.Series([0.1, -0.5, 0.2]), 0.0)
 assert np.isclose(m["MaxDrawdown"], 0.5) and np.isclose(m["Beta"], 1) and np.isclose(m["CumReturn"], 1.1 * 0.5 * 1.2 - 1)
+
+# v2 selection: cluster 0 has the best scores but negative mean Sharpe -> excluded entirely
+from integer_selection import select_with_quality, v2_rules
+sc = np.array([9, 8, 7, 5, 4, 3, 2, 1, 0.5])
+cl = np.repeat([0, 1, 2], 3)
+sh = np.array([-0.5, -0.2, 0.1, 0.4, 0.3, 0.2, 0.1, 0.2, 0.0])     # cluster means -0.2, 0.3, 0.1
+s2 = {"n_stocks": 4, "max_per_cluster": 2, "min_clusters": 2, "exclude_negative_sharpe_clusters": True,
+      "min_eligible_clusters": 2}
+sel, _, info = select_with_quality(sc, cl, sh, s2)
+assert not sel[cl == 0].any() and sel.sum() == 4 and info["ExclusionApplied"], (sel, info)
+assert info["NegSharpeClusters"] == "0" and not info["ExclusionFallback"]
+# too few eligible clusters (2 < 3) -> exclusion dropped, slack rules only: cluster 0 is picked again
+sel, _, info = select_with_quality(sc, cl, sh, {**s2, "min_eligible_clusters": 3})
+assert info["ExclusionFallback"] and not info["ExclusionApplied"] and sel[cl == 0].sum() == 2, (sel, info)
+# max_per_cluster auto = ceil(N / 4)
+assert [v2_rules({"n_stocks": n, "max_per_cluster": "auto"}, {})["max_per_cluster"]
+        for n in (10, 12, 15, 20)] == [3, 3, 4, 5]
+
+# v3: exclusion-aware K. Cluster 0 (mean Sharpe -0.2) excluded leaves clusters 1, 2 with 6 slots
+from clustering import choose_k, exclusion_feasible
+s3 = {**s2, "max_per_cluster": 2}
+assert exclusion_feasible(cl, 3, sh, s3)                                  # 2 eligible, 4 slots >= 4
+assert not exclusion_feasible(cl, 3, sh, {**s3, "n_stocks": 5})           # 4 slots < 5
+assert not exclusion_feasible(cl, 3, sh, {**s3, "min_eligible_clusters": 3})
+diag = pd.DataFrame({"K": [4, 5, 6], "Silhouette": [0.5, 0.4, 0.3], "IPFeasible": True,
+                     "ExclusionFeasible": [False, True, True]})
+assert choose_k(diag) == 5                                                # best K where exclusion works
+assert choose_k(diag.assign(ExclusionFeasible=False)) == 4                # none -> slack-only K
+assert choose_k(diag.drop(columns="ExclusionFeasible")) == 4              # v2 / primary unchanged
 print("ok")

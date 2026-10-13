@@ -1,0 +1,192 @@
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W01 test 2000: K=5 goals met 3/4 Proposed -28.1%  NIFTY50 -14.7%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W02 test 2001: K=6 goals met 3/4 Proposed -6.3%  NIFTY50 -16.2%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W03 test 2002: K=8 goals met 3/4 Proposed +3.4%  NIFTY50 +3.3%
+[v2_N15] W04 test 2003: K=7 goals met 3/4 Proposed +133.3%  NIFTY50 +71.9%
+[v2_N15] W05 test 2004: K=6 goals met 4/4 Proposed +17.0%  NIFTY50 +10.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W06 test 2005: K=4 goals met 4/4 Proposed +70.2%  NIFTY50 +36.3%
+[v2_N15] W07 test 2006: K=5 goals met 4/4 Proposed +38.6%  NIFTY50 +39.8%
+[v2_N15] W08 test 2007: K=4 goals met 4/4 Proposed +56.0%  NIFTY50 +54.8%
+[v2_N15] W09 test 2008: K=4 goals met 4/4 Proposed -50.4%  NIFTY50 -51.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W10 test 2009: K=4 goals met 3/4 Proposed +60.0%  NIFTY50 +75.8%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W11 test 2010: K=4 goals met 3/4 Proposed +31.2%  NIFTY50 +17.9%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W12 test 2011: K=6 goals met 3/4 Proposed -21.1%  NIFTY50 -24.6%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W13 test 2012: K=4 goals met 3/4 Proposed +46.7%  NIFTY50 +27.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W14 test 2013: K=4 goals met 4/4 Proposed -0.5%  NIFTY50 +6.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W15 test 2014: K=4 goals met 4/4 Proposed +54.8%  NIFTY50 +31.4%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W16 test 2015: K=4 goals met 4/4 Proposed +15.8%  NIFTY50 -4.1%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W17 test 2016: K=4 goals met 4/4 Proposed -3.7%  NIFTY50 +3.0%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W18 test 2017: K=4 goals met 4/4 Proposed +52.1%  NIFTY50 +28.6%
+[v2_N15] W19 test 2018: K=5 goals met 4/4 Proposed -12.4%  NIFTY50 +3.2%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W20 test 2019: K=5 goals met 4/4 Proposed +11.0%  NIFTY50 +12.0%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W21 test 2020: K=4 goals met 4/4 Proposed +43.7%  NIFTY50 +14.9%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N15] W22 test 2021: K=4 goals met 4/4 Proposed +17.1%  NIFTY50 +12.1%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W01 test 2000: K=5 goals met 3/4 Proposed -16.3%  NIFTY50 -14.7%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W02 test 2001: K=6 goals met 3/4 Proposed -5.4%  NIFTY50 -16.2%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W03 test 2002: K=8 goals met 3/4 Proposed +4.7%  NIFTY50 +3.3%
+[v2_N10] W04 test 2003: K=7 goals met 3/4 Proposed +163.5%  NIFTY50 +71.9%
+[v2_N10] W05 test 2004: K=6 goals met 3/4 Proposed +14.0%  NIFTY50 +10.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W06 test 2005: K=4 goals met 4/4 Proposed +68.7%  NIFTY50 +36.3%
+[v2_N10] W07 test 2006: K=5 goals met 4/4 Proposed +60.9%  NIFTY50 +39.8%
+[v2_N10] W08 test 2007: K=4 goals met 3/4 Proposed +58.5%  NIFTY50 +54.8%
+[v2_N10] W09 test 2008: K=4 goals met 3/4 Proposed -49.1%  NIFTY50 -51.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W10 test 2009: K=4 goals met 3/4 Proposed +84.2%  NIFTY50 +75.8%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W11 test 2010: K=4 goals met 3/4 Proposed +29.1%  NIFTY50 +17.9%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W12 test 2011: K=6 goals met 3/4 Proposed -9.5%  NIFTY50 -24.6%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W13 test 2012: K=4 goals met 3/4 Proposed +47.3%  NIFTY50 +27.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W14 test 2013: K=4 goals met 3/4 Proposed -4.8%  NIFTY50 +6.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W15 test 2014: K=4 goals met 4/4 Proposed +59.9%  NIFTY50 +31.4%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W16 test 2015: K=4 goals met 4/4 Proposed +9.3%  NIFTY50 -4.1%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W17 test 2016: K=4 goals met 4/4 Proposed -3.8%  NIFTY50 +3.0%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W18 test 2017: K=4 goals met 4/4 Proposed +55.1%  NIFTY50 +28.6%
+[v2_N10] W19 test 2018: K=5 goals met 4/4 Proposed -21.6%  NIFTY50 +3.2%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W20 test 2019: K=5 goals met 4/4 Proposed +8.9%  NIFTY50 +12.0%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W21 test 2020: K=4 goals met 4/4 Proposed +50.1%  NIFTY50 +14.9%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N10] W22 test 2021: K=4 goals met 4/4 Proposed +34.4%  NIFTY50 +12.1%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W01 test 2000: K=5 goals met 3/4 Proposed -27.3%  NIFTY50 -14.7%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W02 test 2001: K=6 goals met 3/4 Proposed -8.6%  NIFTY50 -16.2%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W03 test 2002: K=8 goals met 3/4 Proposed +1.4%  NIFTY50 +3.3%
+[v2_N12] W04 test 2003: K=7 goals met 3/4 Proposed +157.5%  NIFTY50 +71.9%
+[v2_N12] W05 test 2004: K=6 goals met 3/4 Proposed +14.6%  NIFTY50 +10.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W06 test 2005: K=4 goals met 4/4 Proposed +69.8%  NIFTY50 +36.3%
+[v2_N12] W07 test 2006: K=5 goals met 4/4 Proposed +56.7%  NIFTY50 +39.8%
+[v2_N12] W08 test 2007: K=4 goals met 3/4 Proposed +56.7%  NIFTY50 +54.8%
+[v2_N12] W09 test 2008: K=4 goals met 3/4 Proposed -45.2%  NIFTY50 -51.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W10 test 2009: K=4 goals met 3/4 Proposed +79.4%  NIFTY50 +75.8%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W11 test 2010: K=4 goals met 3/4 Proposed +24.3%  NIFTY50 +17.9%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W12 test 2011: K=6 goals met 3/4 Proposed -15.9%  NIFTY50 -24.6%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W13 test 2012: K=4 goals met 3/4 Proposed +51.1%  NIFTY50 +27.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W14 test 2013: K=4 goals met 4/4 Proposed -7.4%  NIFTY50 +6.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W15 test 2014: K=4 goals met 4/4 Proposed +60.1%  NIFTY50 +31.4%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W16 test 2015: K=4 goals met 4/4 Proposed +21.9%  NIFTY50 -4.1%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W17 test 2016: K=4 goals met 4/4 Proposed -4.2%  NIFTY50 +3.0%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W18 test 2017: K=4 goals met 4/4 Proposed +54.3%  NIFTY50 +28.6%
+[v2_N12] W19 test 2018: K=5 goals met 4/4 Proposed -17.6%  NIFTY50 +3.2%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W20 test 2019: K=5 goals met 4/4 Proposed +6.9%  NIFTY50 +12.0%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W21 test 2020: K=4 goals met 4/4 Proposed +50.6%  NIFTY50 +14.9%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N12] W22 test 2021: K=4 goals met 4/4 Proposed +27.3%  NIFTY50 +12.1%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W01 test 2000: K=5 goals met 3/4 Proposed -13.5%  NIFTY50 -14.7%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W02 test 2001: K=6 goals met 3/4 Proposed -12.8%  NIFTY50 -16.2%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W03 test 2002: K=8 goals met 3/4 Proposed +6.6%  NIFTY50 +3.3%
+[v2_N20] W04 test 2003: K=7 goals met 3/4 Proposed +134.5%  NIFTY50 +71.9%
+[v2_N20] W05 test 2004: K=6 goals met 4/4 Proposed +18.5%  NIFTY50 +10.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W06 test 2005: K=4 goals met 4/4 Proposed +65.9%  NIFTY50 +36.3%
+[v2_N20] W07 test 2006: K=5 goals met 4/4 Proposed +35.8%  NIFTY50 +39.8%
+[v2_N20] W08 test 2007: K=4 goals met 4/4 Proposed +58.0%  NIFTY50 +54.8%
+[v2_N20] W09 test 2008: K=4 goals met 4/4 Proposed -47.4%  NIFTY50 -51.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W10 test 2009: K=4 goals met 3/4 Proposed +75.3%  NIFTY50 +75.8%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W11 test 2010: K=4 goals met 3/4 Proposed +41.1%  NIFTY50 +17.9%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W12 test 2011: K=6 goals met 3/4 Proposed -12.6%  NIFTY50 -24.6%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W13 test 2012: K=4 goals met 3/4 Proposed +46.0%  NIFTY50 +27.7%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W14 test 2013: K=4 goals met 4/4 Proposed +6.1%  NIFTY50 +6.8%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W15 test 2014: K=4 goals met 4/4 Proposed +58.9%  NIFTY50 +31.4%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W16 test 2015: K=4 goals met 4/4 Proposed +11.7%  NIFTY50 -4.1%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W17 test 2016: K=4 goals met 4/4 Proposed -10.0%  NIFTY50 +3.0%
+  only 3 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W18 test 2017: K=4 goals met 4/4 Proposed +67.9%  NIFTY50 +28.6%
+[v2_N20] W19 test 2018: K=5 goals met 4/4 Proposed -9.4%  NIFTY50 +3.2%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W20 test 2019: K=5 goals met 4/4 Proposed +8.8%  NIFTY50 +12.0%
+  only 2 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W21 test 2020: K=4 goals met 4/4 Proposed +30.5%  NIFTY50 +14.9%
+  only 1 clusters with mean Sharpe >= 0; fallback
+[v2_N20] W22 test 2021: K=4 goals met 4/4 Proposed +17.1%  NIFTY50 +12.1%
+[v2_N15_slack_only] W01 test 2000: K=5 goals met 3/4 Proposed -28.1%  NIFTY50 -14.7%
+[v2_N15_slack_only] W02 test 2001: K=6 goals met 3/4 Proposed -6.3%  NIFTY50 -16.2%
+[v2_N15_slack_only] W03 test 2002: K=8 goals met 3/4 Proposed +3.4%  NIFTY50 +3.3%
+[v2_N15_slack_only] W04 test 2003: K=7 goals met 3/4 Proposed +127.0%  NIFTY50 +71.9%
+[v2_N15_slack_only] W05 test 2004: K=6 goals met 4/4 Proposed +26.6%  NIFTY50 +10.7%
+[v2_N15_slack_only] W06 test 2005: K=4 goals met 4/4 Proposed +70.2%  NIFTY50 +36.3%
+[v2_N15_slack_only] W07 test 2006: K=5 goals met 4/4 Proposed +38.6%  NIFTY50 +39.8%
+[v2_N15_slack_only] W08 test 2007: K=4 goals met 4/4 Proposed +56.0%  NIFTY50 +54.8%
+[v2_N15_slack_only] W09 test 2008: K=4 goals met 4/4 Proposed -50.4%  NIFTY50 -51.8%
+[v2_N15_slack_only] W10 test 2009: K=4 goals met 3/4 Proposed +60.0%  NIFTY50 +75.8%
+[v2_N15_slack_only] W11 test 2010: K=4 goals met 3/4 Proposed +31.2%  NIFTY50 +17.9%
+[v2_N15_slack_only] W12 test 2011: K=6 goals met 3/4 Proposed -21.1%  NIFTY50 -24.6%
+[v2_N15_slack_only] W13 test 2012: K=4 goals met 3/4 Proposed +46.7%  NIFTY50 +27.7%
+[v2_N15_slack_only] W14 test 2013: K=4 goals met 4/4 Proposed -0.5%  NIFTY50 +6.8%
+[v2_N15_slack_only] W15 test 2014: K=4 goals met 4/4 Proposed +54.8%  NIFTY50 +31.4%
+[v2_N15_slack_only] W16 test 2015: K=4 goals met 4/4 Proposed +15.8%  NIFTY50 -4.1%
+[v2_N15_slack_only] W17 test 2016: K=4 goals met 4/4 Proposed -3.7%  NIFTY50 +3.0%
+[v2_N15_slack_only] W18 test 2017: K=4 goals met 4/4 Proposed +52.1%  NIFTY50 +28.6%
+[v2_N15_slack_only] W19 test 2018: K=5 goals met 4/4 Proposed -12.4%  NIFTY50 +3.2%
+[v2_N15_slack_only] W20 test 2019: K=5 goals met 4/4 Proposed +11.0%  NIFTY50 +12.0%
+[v2_N15_slack_only] W21 test 2020: K=4 goals met 4/4 Proposed +43.7%  NIFTY50 +14.9%
+[v2_N15_slack_only] W22 test 2021: K=4 goals met 4/4 Proposed +17.1%  NIFTY50 +12.1%
+       Experiment  AnnReturn  AnnVol  Sharpe  Sortino  MaxDrawdown  Beta  AvgTurnover SharpeWinsVs_EW_Same15 SharpeWinsVs_Random15 SharpeWinsVs_EW_Universe SharpeWinsVs_NIFTY50  OverlapWithPrimary
+          primary      0.193   0.203   0.606    0.840        0.607 0.665        1.567                  12/22                 13/22                    12/22                12/22               1.000
+         K5_fixed      0.162   0.206   0.448    0.618        0.662 0.670        1.659                  10/22                 14/22                    11/22                13/22               0.758
+         K6_fixed      0.175   0.200   0.528    0.730        0.594 0.651        1.494                  12/22                 10/22                    11/22                14/22               0.618
+         K7_fixed      0.169   0.199   0.497    0.685        0.586 0.651        1.532                  13/22                 10/22                    11/22                13/22               0.536
+         K8_fixed      0.160   0.202   0.448    0.601        0.563 0.651        1.539                   9/22                 10/22                    10/22                13/22               0.488
+     weights_risk      0.202   0.191   0.694    0.969        0.599 0.627        1.507                  13/22                 13/22                    14/22                14/22               0.639
+   weights_return      0.164   0.219   0.431    0.594        0.691 0.702        1.721                  15/22                 11/22                    11/22                13/22               0.612
+    weights_equal      0.192   0.196   0.620    0.860        0.609 0.684        1.508                  10/22                 13/22                    13/22                16/22               0.691
+momentum_features      0.176   0.206   0.515    0.708        0.682 0.686        1.530                   9/22                 12/22                    11/22                13/22               0.452
+ max2_per_cluster      0.178   0.219   0.494    0.664        0.576 0.699        1.610                  11/22                 11/22                    10/22                13/22               0.409
+       maxw_10pct      0.201   0.212   0.616    0.844        0.658 0.719        1.568                  14/22                 13/22                    12/22                12/22               1.000
+maxw_25pct_minw_0      0.191   0.199   0.608    0.849        0.570 0.600        1.578                  13/22                 13/22                    13/22                13/22               1.000
+           v2_N15      0.180   0.202   0.543    0.747        0.581 0.658        1.447                  11/22                 13/22                    12/22                14/22               0.573
+           v2_N10      0.220   0.219   0.686    0.946        0.567 0.705        1.509                  11/22                 14/22                    11/22                16/22               0.741
+           v2_N12      0.206   0.214   0.636    0.877        0.543 0.678        1.540                  12/22                 15/22                    12/22                15/22               0.686
+           v2_N20      0.205   0.191   0.708    0.980        0.562 0.635        1.388                  14/22                 16/22                    12/22                14/22               0.455
+v2_N15_slack_only      0.182   0.200   0.562    0.772        0.581 0.657        1.448                  10/22                 13/22                    12/22                14/22               0.579
