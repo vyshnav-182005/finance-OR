@@ -156,6 +156,8 @@ window.dash = (() => {
     <div class="fx-controls" style="flex: 0 1 auto">
       <label class="fx-lab" for="fx-cost">Trading cost
         <select class="fx-sel" id="fx-cost" data-source="full_period"></select></label>
+      <label class="fx-lab" for="fx-amount">Amount invested (₹)
+        <input class="fx-sel" id="fx-amount" type="number" min="1" step="1000" value="100000" inputmode="decimal" style="width: 9em"></label>
     </div>
   </header>
 
@@ -163,8 +165,6 @@ window.dash = (() => {
     <button class="fx-tab" role="tab" data-tab="overview" aria-selected="true">Overview</button>
     <button class="fx-tab" role="tab" data-tab="years" aria-selected="false">Year by year</button>
     <button class="fx-tab" role="tab" data-tab="portfolio" aria-selected="false">Portfolio explorer</button>
-    <button class="fx-tab" role="tab" data-tab="stats" aria-selected="false">Statistics</button>
-    <button class="fx-tab" role="tab" data-tab="robustness" aria-selected="false">Robustness</button>
   </nav>
 
   <!-- OVERVIEW -->
@@ -194,8 +194,8 @@ window.dash = (() => {
 
     <div class="fx-card" id="wealth-card">
       <div class="fx-cardhead">
-        <div><h3>Growth of ₹1, net of costs</h3>
-          <p class="fx-note">Weekly closes, log scale. Each year's portfolio is built from the 4 years before it and held, unchanged, for the next year. Click a name to show or hide it.</p></div>
+        <div><h3>Growth of <span id="fx-amt-title">₹1,00,000</span> invested in January 2000, net of costs</h3>
+          <p class="fx-note">One amount invested once and compounded through every test year (2000 to mid-2021), not a fresh amount each year. Weekly closes, log scale. Each year's portfolio is built from the 4 years before it and held, unchanged, for the next year. Click a name to show or hide it.</p></div>
       </div>
       <div class="fx-chips" id="fx-legend"></div>
       <div class="fx-chart dash-skeleton" id="wealth-chart" data-source="wealth_weekly" style="min-height: 360px"></div>
@@ -203,7 +203,7 @@ window.dash = (() => {
 
     <div class="fx-card" id="dd-card">
       <h3>Drawdown from running peak</h3>
-      <p class="fx-note">Worst weekly level below the previous high. Same series as above.</p>
+      <p class="fx-note">How far each strategy is below its own highest value so far (0% = at a new high, &minus;40% = 40% below its peak). Plotted once a week from January 2000 to June 2021, so the axis shows years. Same strategies and trading costs as the chart above.</p>
       <div class="fx-chart dash-skeleton" id="dd-chart" data-source="wealth_weekly" style="min-height: 220px"></div>
     </div>
 
@@ -280,7 +280,7 @@ window.dash = (() => {
 
     <div class="fx-card" id="hold-card">
       <h3>The 15 holdings and how they did</h3>
-      <p class="fx-note">Weight from Goal Programming (2% to 15%). Score is the Integer Programming selection score. Return, volatility, Sharpe, beta and drawdown are training-window values; the last two columns are the test year. Contribution = weight × test-year return.</p>
+      <p class="fx-note">Weight from Goal Programming (2% to 15%). Score is the Integer Programming selection score. Return, volatility, Sharpe, beta and drawdown are training-window values; the last four columns are the test year. Contribution = weight × test-year return. Invested = the portfolio's value at the start of that year (from the amount invested in January 2000) × weight; P&amp;L = invested × test-year return, before trading costs.</p>
       <div class="fx-tablewrap">
         <table class="fx-t" id="hold-table" data-source="holdings" data-row-key="Key">
           <thead><tr>
@@ -296,6 +296,8 @@ window.dash = (() => {
             <th data-field="MaxDrawdown"><button type="button">Train max DD</button></th>
             <th data-field="TestReturn"><button type="button">Test-year return</button></th>
             <th data-field="Contribution"><button type="button">Contribution</button></th>
+            <th data-field="Invested"><button type="button">Invested (₹)</button></th>
+            <th data-field="PnL"><button type="button">P&amp;L (₹)</button></th>
           </tr></thead><tbody></tbody>
         </table>
       </div>
@@ -327,73 +329,6 @@ window.dash = (() => {
     </div>
   </section>
 
-  <!-- STATS -->
-  <section class="fx-page" id="stats" role="tabpanel" hidden>
-    <div class="fx-card" id="forest-card">
-      <div class="fx-cardhead">
-        <div><h3>Proposed minus each baseline, per test year</h3>
-          <p class="fx-note" id="forest-note">Dot is the mean yearly difference, line its bootstrap 95% interval. Right of zero favours the proposed portfolio. Computed with 0.25% costs.</p></div>
-        <div class="fx-seg" id="fx-metric" role="group" aria-label="Metric">
-          <button type="button" data-m="Sharpe" aria-pressed="true">Sharpe</button>
-          <button type="button" data-m="AnnReturn" aria-pressed="false">Return</button>
-          <button type="button" data-m="MaxDrawdown" aria-pressed="false">Drawdown</button>
-        </div>
-      </div>
-      <div class="fx-chart dash-skeleton" id="forest-chart" data-source="comparisons" style="min-height: 300px"></div>
-    </div>
-    <div class="fx-card" id="cmp-card">
-      <h3>Paired comparison table</h3>
-      <p class="fx-note">Wins = test years where the proposed portfolio was better. p is the Wilcoxon signed-rank test on the yearly differences. For drawdown a positive difference means the proposed portfolio fell less.</p>
-      <div class="fx-tablewrap">
-        <table class="fx-t" id="cmp-table" data-source="comparisons" data-row-key="Key">
-          <thead><tr>
-            <th class="l" data-field="Baseline"><button type="button">Baseline</button></th>
-            <th class="l" data-field="Metric"><button type="button">Metric</button></th>
-            <th data-field="ProposedWins"><button type="button">Years won</button></th>
-            <th data-field="MeanDiff"><button type="button">Mean diff</button></th>
-            <th data-field="CI95_Low"><button type="button">95% CI low</button></th>
-            <th data-field="CI95_High"><button type="button">95% CI high</button></th>
-            <th data-field="WilcoxonP"><button type="button">p-value</button></th>
-          </tr></thead><tbody></tbody>
-        </table>
-      </div>
-    </div>
-    <div class="fx-card" id="reg-card">
-      <h3>Market regimes</h3>
-      <p class="fx-note">Average test-year Sharpe ratio. A year is Bull if the NIFTY 50 rose, and high-volatility if its volatility was above the median test year. Labels are set after the fact and never used to build portfolios.</p>
-      <div class="fx-chips" id="fx-reg-legend"></div>
-      <div class="fx-chart dash-skeleton" id="reg-chart" data-source="regimes" style="min-height: 280px"></div>
-    </div>
-  </section>
-
-  <!-- ROBUSTNESS -->
-  <section class="fx-page" id="robustness" role="tabpanel" hidden>
-    <div class="fx-card" id="exp-card">
-      <h3>Sharpe ratio when one design choice changes</h3>
-      <p class="fx-note">Each bar is a full re-run of all 22 years with a single change. The dashed line is the NIFTY 50. Computed with 0.25% costs. These runs test sensitivity; none was used to pick the primary model.</p>
-      <div class="fx-chart dash-skeleton" id="exp-chart" data-source="experiments full_period" style="min-height: 380px"></div>
-    </div>
-    <div class="fx-card" id="expt-card">
-      <h3>Experiment details</h3>
-      <p class="fx-note">Shared holdings = average share of each year's 15 stocks that the primary model also held.</p>
-      <div class="fx-tablewrap">
-        <table class="fx-t" id="exp-table" data-source="experiments" data-row-key="Experiment">
-          <thead><tr>
-            <th class="l" data-field="Experiment"><button type="button">Experiment</button></th>
-            <th data-field="AnnReturn"><button type="button">Return / yr</button></th>
-            <th data-field="AnnVol"><button type="button">Volatility</button></th>
-            <th data-field="Sharpe"><button type="button">Sharpe</button></th>
-            <th data-field="Sortino"><button type="button">Sortino</button></th>
-            <th data-field="MaxDrawdown"><button type="button">Max drawdown</button></th>
-            <th data-field="AvgTurnover"><button type="button">Turnover / yr</button></th>
-            <th data-field="SharpeWinsVs_NIFTY50"><button type="button">Sharpe wins vs NIFTY 50</button></th>
-            <th data-field="SharpeWinsVs_EW_Same15"><button type="button">vs equal-weight 15</button></th>
-            <th data-field="OverlapWithPrimary"><button type="button">Shared holdings</button></th>
-          </tr></thead><tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
 </div>
 
 <script>
@@ -401,16 +336,14 @@ const S = ['Proposed', 'EW_Same15', 'MV_Same15', 'TopSharpe15', 'TopReturn15', '
 const LABEL = { Proposed: 'Proposed (K-Means + IP + GP)', EW_Same15: 'Equal-weight, same 15', MV_Same15: 'Markowitz, same 15',
   TopSharpe15: 'Top-Sharpe 15', TopReturn15: 'Top-Return 15', Random15: 'Random 15', EW_Universe: 'Equal-weight universe',
   NIFTY50: 'NIFTY 50', NIFTY500: 'NIFTY 500' };
-const EXP = { primary: 'Primary (silhouette-chosen K)', K5_fixed: 'K fixed at 5', K6_fixed: 'K fixed at 6', K7_fixed: 'K fixed at 7',
-  K8_fixed: 'K fixed at 8', weights_risk: 'Risk-focused score weights', weights_return: 'Return-focused score weights',
-  weights_equal: 'Equal score weights', momentum_features: 'Momentum added to clustering', max2_per_cluster: 'At most 2 stocks per cluster',
-  maxw_10pct: 'Max weight 10%', maxw_25pct_minw_0: 'Max weight 25%, min 0%' };
 const pct = d3.format('.1%'), pct0 = d3.format('.0%'), f2 = d3.format('.2f'), sp = d3.format('+.1%');
 const col = (s) => { const i = S.indexOf(s); return i >= 0 && i < 8 ? dash.colors[i] : 'var(--cds-chart-muted)'; };
 const rowsOf = (id) => { const d = dash.data(id); return d.status === 'ok' ? d.data : null; };
 const root = document.getElementById('dash-root');
-const state = { tab: 'overview', metric: 'Sharpe', visible: new Set(['Proposed', 'EW_Same15', 'MV_Same15', 'EW_Universe', 'NIFTY50']) };
+const state = { amount: 100000, tab: 'overview', visible: new Set(['Proposed', 'EW_Same15', 'MV_Same15', 'EW_Universe', 'NIFTY50']) };
 const params = () => { const p = dash.params(); return { cost: Number(p.cost ?? 25), year: Number(p.year ?? 2021), versus: p.versus || 'NIFTY50' }; };
+const inr = (v) => (v < 0 ? '−' : '') + '₹' + Math.abs(v).toLocaleString('en-IN', { maximumFractionDigits: Math.abs(v) < 100 ? 2 : 0 });
+const inrS = (v) => (v > 0 ? '+' : '') + inr(v);
 const yearLabel = (y) => (y === 2021 ? '2021 (Jan–Jun)' : String(y));
 
 const FMT = { AnnReturn: pct, AnnVol: pct, Sharpe: f2, Sortino: f2, MaxDrawdown: pct, Beta: f2, CumReturn: sp,
@@ -680,62 +613,8 @@ function kChart(box, rows) {
     .on('pointerleave', () => hideTip(box));
 }
 
-function forest(box, rows, metric) {
-  const fmt = metric === 'Sharpe' ? f2 : (v) => d3.format('+.1%')(v);
-  const fmtS = metric === 'Sharpe' ? d3.format('+.2f') : (v) => d3.format('+.1%')(v);
-  const names = rows.map((r) => LABEL[r.Baseline]);
-  const rh = 34, mt = 8, mb = 26, h = rows.length * rh + mt + mb;
-  const { svg, w } = newSvg(box, h);
-  const right = rows.map((r) => `${r.ProposedWins} of ${r.Periods} yrs · p ${d3.format('.3f')(r.WilcoxonP)}`);
-  const ml = textW(svg, names) + 12, mr = textW(svg, right) + 14;
-  const x = d3.scaleLinear([Math.min(0, d3.min(rows, (r) => r.CI95_Low)), Math.max(0, d3.max(rows, (r) => r.CI95_High))], [ml, w - mr]).nice();
-  const y = d3.scaleBand(rows.map((r) => r.Baseline), [mt, h - mb]).padding(0.3);
-  svg.append('g').attr('transform', `translate(0,${h - mb})`).call(d3.axisBottom(x).ticks(Math.max(3, Math.floor((w - ml - mr) / 70))).tickFormat(fmt).tickSize(-(h - mb - mt))).call(styleAxis);
-  svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', mt).attr('y2', h - mb).style('stroke', 'var(--cds-chart-axis)').style('stroke-width', 1.5);
-  const g = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (r) => `translate(0,${y(r.Baseline) + y.bandwidth() / 2})`);
-  const sig = (r) => r.CI95_Low > 0 || r.CI95_High < 0;
-  g.append('text').attr('x', ml - 10).attr('dy', '0.35em').attr('text-anchor', 'end').text((r) => LABEL[r.Baseline])
-    .style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg)');
-  g.append('line').attr('x1', (r) => x(r.CI95_Low)).attr('x2', (r) => x(r.CI95_High)).style('stroke', (r) => (sig(r) ? dash.colors[0] : 'var(--cds-chart-muted)')).style('stroke-width', 3).style('stroke-linecap', 'round');
-  g.append('circle').attr('cx', (r) => x(r.MeanDiff)).attr('r', 6).style('fill', (r) => (sig(r) ? dash.colors[0] : 'var(--cds-chart-muted)')).style('stroke', 'var(--color-panel)').style('stroke-width', 2);
-  g.append('text').attr('x', w - mr + 10).attr('dy', '0.35em').text((r, i) => right[i]).style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg-muted)');
-  g.append('rect').attr('x', 0).attr('y', -rh / 2).attr('width', w).attr('height', rh).style('fill', 'transparent')
-    .on('pointermove', (e, r) => showTip(box, x(r.CI95_High) * box.clientWidth / w, y(r.Baseline) + y.bandwidth() / 2, 'Proposed vs ' + LABEL[r.Baseline],
-      [{ label: 'Mean yearly difference', v: fmtS(r.MeanDiff) }, { label: 'Median difference', v: fmtS(r.MedianDiff) },
-        { label: '95% interval', v: fmtS(r.CI95_Low) + ' to ' + fmtS(r.CI95_High) }, { label: 'Years won', v: r.ProposedWins + ' of ' + r.Periods },
-        { label: 'Wilcoxon p', v: d3.format('.3f')(r.WilcoxonP) }]))
-    .on('pointerleave', () => hideTip(box));
-}
 
-function expBars(box, rows, ref) {
-  const rh = 30, mt = 8, mb = 26, h = rows.length * rh + mt + mb;
-  const { svg, w } = newSvg(box, h);
-  const names = rows.map((r) => EXP[r.Experiment] || r.Experiment);
-  const ml = textW(svg, names) + 12, mr = textW(svg, ['0.00']) + 12;
-  const x = d3.scaleLinear([0, Math.max(d3.max(rows, (r) => r.Sharpe), ref ?? 0)], [ml, w - mr]).nice();
-  const y = d3.scaleBand(rows.map((r) => r.Experiment), [mt, h - mb]).padding(0.25);
-  svg.append('g').attr('transform', `translate(0,${h - mb})`).call(d3.axisBottom(x).ticks(5).tickFormat(f2).tickSize(-(h - mb - mt))).call(styleAxis);
-  const g = svg.append('g').selectAll('g').data(rows).join('g').attr('transform', (r) => `translate(0,${y(r.Experiment)})`);
-  g.append('text').attr('x', ml - 10).attr('y', y.bandwidth() / 2).attr('dy', '0.35em').attr('text-anchor', 'end').text((r) => EXP[r.Experiment] || r.Experiment)
-    .style('font-size', 'var(--cds-font-size-caption)').style('fill', (r) => (r.Experiment === 'primary' ? 'var(--color-fg)' : 'var(--color-fg-muted)'));
-  g.append('rect').attr('x', ml).attr('width', (r) => Math.max(1, x(r.Sharpe) - ml)).attr('height', y.bandwidth()).attr('rx', 4)
-    .style('fill', (r) => (r.Experiment === 'primary' ? dash.colors[0] : 'var(--cds-chart-muted)'));
-  g.append('text').attr('x', (r) => x(r.Sharpe) + 6).attr('y', y.bandwidth() / 2).attr('dy', '0.35em').text((r) => f2(r.Sharpe))
-    .style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg)');
-  g.append('rect').attr('x', 0).attr('width', w).attr('height', y.bandwidth()).style('fill', 'transparent')
-    .on('pointermove', (e, r) => showTip(box, x(r.Sharpe) * box.clientWidth / w, y(r.Experiment) + y.bandwidth() / 2, EXP[r.Experiment] || r.Experiment,
-      [{ label: 'Sharpe', v: f2(r.Sharpe) }, { label: 'Return / yr', v: pct(r.AnnReturn) }, { label: 'Max drawdown', v: pct(r.MaxDrawdown) },
-        { label: 'Sharpe wins vs NIFTY 50', v: r.SharpeWinsVs_NIFTY50 }, { label: 'Shared holdings', v: r.OverlapWithPrimary == null ? '—' : pct0(r.OverlapWithPrimary) }]))
-    .on('pointerleave', () => hideTip(box));
-  if (ref != null) {
-    svg.append('line').attr('x1', x(ref)).attr('x2', x(ref)).attr('y1', mt).attr('y2', h - mb)
-      .style('stroke', 'var(--cds-chart-reference)').style('stroke-width', 1.5).style('stroke-dasharray', '5 4');
-    svg.append('text').attr('x', x(ref) + 4).attr('y', h - mb - 4).text('NIFTY 50 ' + f2(ref))
-      .style('font-size', 'var(--cds-font-size-caption)').style('fill', 'var(--color-fg-muted)');
-  }
-}
 
-// ---------- marks ----------
 function fillMarks() {
   const { cost, year } = params();
   root.querySelectorAll('.fx-m[data-source][data-field]').forEach((el) => {
@@ -764,6 +643,13 @@ const costSel = document.getElementById('fx-cost'), yearSel = document.getElemen
 costSel.addEventListener('change', () => dash.setParams({ cost: Number(costSel.value) }));
 yearSel.addEventListener('change', () => dash.setParams({ year: Number(yearSel.value) }));
 vsSel.addEventListener('change', () => dash.setParams({ versus: vsSel.value }));
+document.getElementById('fx-amount').addEventListener('input', (e) => {   // display only: no data refetch
+  const v = Number(e.target.value);
+  if (!(v > 0)) return;
+  state.amount = v;
+  document.getElementById('fx-amt-title').textContent = inr(v);
+  DRAW[state.tab]();
+});
 function syncControls() {
   const p = params();
   const fp = rowsOf('full_period');
@@ -778,12 +664,6 @@ function syncControls() {
   if (vsSel.options.length === 0) vsSel.replaceChildren(...S.filter((s) => s !== 'Proposed').map((s) => new Option(LABEL[s], s)));
   vsSel.value = p.versus;
 }
-document.getElementById('fx-metric').addEventListener('click', (e) => {
-  const b = e.target.closest('button[data-m]'); if (!b) return;
-  state.metric = b.dataset.m;
-  document.querySelectorAll('#fx-metric button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-  drawStats();
-});
 
 // ---------- pages ----------
 function drawOverview() {
@@ -794,7 +674,8 @@ function drawOverview() {
   const wb = document.getElementById('wealth-chart'), db = document.getElementById('dd-chart');
   if (status(wb, ['wealth_weekly']) && wk) {
     const rows = wk.filter((r) => r.CostBps === cost);
-    lineChart(wb, rows, keys, { h: 360, log: true, suffix: '', yfmt: (v) => d3.format('~g')(v) + '×', tfmt: (v) => f2(v) + '×' });
+    const a = state.amount;
+    lineChart(wb, rows, keys, { h: 360, log: true, suffix: '', yfmt: (v) => inr(v * a), tfmt: (v) => inr(v * a) + ' (' + f2(v) + '×)' });
   }
   if (status(db, ['wealth_weekly']) && wk) {
     const rows = wk.filter((r) => r.CostBps === cost);
@@ -825,11 +706,13 @@ function drawYears() {
   if (status(rb, ['random_percentile']) && rp) dotsChart(rb, rp);
 }
 function drawPortfolio() {
-  const { year } = params();
-  const h = rowsOf('holdings');
-  if (h) fillTable(document.getElementById('hold-table'), h.filter((r) => r.TestYear === year), ['Key'],
-    { Stock: String, Company: String, Cluster: String, Weight: pct, Score: f2, Return: pct, Volatility: pct, Sharpe: f2, Beta: f2, MaxDrawdown: pct, TestReturn: sp, Contribution: d3.format('+.2%') },
-    { sortField: 'Weight', bar: 'Weight', signed: ['TestReturn', 'Contribution'] });
+  const { year, cost } = params();
+  const h = rowsOf('holdings'), ys = rowsOf('year_start');
+  const start = state.amount * (ys?.find((r) => r.TestYear === year && r.CostBps === cost)?.Start ?? NaN);
+  if (h) fillTable(document.getElementById('hold-table'), h.filter((r) => r.TestYear === year)
+      .map((r) => ({ ...r, Invested: start * r.Weight, PnL: start * r.Weight * r.TestReturn })), ['Key'],
+    { Stock: String, Company: String, Cluster: String, Weight: pct, Score: f2, Return: pct, Volatility: pct, Sharpe: f2, Beta: f2, MaxDrawdown: pct, TestReturn: sp, Contribution: d3.format('+.2%'), Invested: inr, PnL: inrS },
+    { sortField: 'Weight', bar: 'Weight', signed: ['TestReturn', 'Contribution', 'PnL'] });
   const cp = rowsOf('cluster_profiles');
   if (cp) fillTable(document.getElementById('clus-table'), cp.filter((r) => r.TestYear === year), ['Key'],
     { Cluster: String, Size: String, Description: String, Return: pct, Volatility: pct, Beta: f2, MaxDrawdown: pct },
@@ -838,47 +721,7 @@ function drawPortfolio() {
   const kd = rowsOf('k_diagnostics');
   if (status(kb, ['k_diagnostics']) && kd) kChart(kb, kd.filter((r) => r.TestYear === year));
 }
-function drawStats() {
-  const c = rowsOf('comparisons');
-  const fb = document.getElementById('forest-chart');
-  if (status(fb, ['comparisons']) && c) forest(fb, c.filter((r) => r.Metric === state.metric), state.metric);
-  document.getElementById('forest-note').textContent = 'Dot is the mean yearly difference, line its bootstrap 95% interval; blue where the interval excludes zero. Right of zero favours the proposed portfolio'
-    + (state.metric === 'MaxDrawdown' ? ' (a smaller drawdown).' : '.') + ' Computed with 0.25% costs.';
-  if (c) fillTable(document.getElementById('cmp-table'), c, ['Key'],
-    { Baseline: (v) => LABEL[v], Metric: (v) => ({ AnnReturn: 'Return', Sharpe: 'Sharpe', MaxDrawdown: 'Drawdown' }[v] || v),
-      ProposedWins: (v, r) => v + ' of ' + r.Periods,
-      MeanDiff: (v, r) => (r.Metric === 'Sharpe' ? d3.format('+.2f')(v) : d3.format('+.1%')(v)),
-      CI95_Low: (v, r) => (r.Metric === 'Sharpe' ? d3.format('+.2f')(v) : d3.format('+.1%')(v)),
-      CI95_High: (v, r) => (r.Metric === 'Sharpe' ? d3.format('+.2f')(v) : d3.format('+.1%')(v)),
-      WilcoxonP: d3.format('.3f') },
-    { sortField: 'WilcoxonP', sortDir: 1 });
-  const rg = rowsOf('regimes');
-  const rb = document.getElementById('reg-chart');
-  const strats = ['Proposed', 'EW_Same15', 'EW_Universe', 'NIFTY50'];
-  chips(document.getElementById('fx-reg-legend'), strats);
-  if (status(rb, ['regimes']) && rg) {
-    const m = new Map(rg.map((r) => [r.Regime + '|' + r.Strategy, r]));
-    const regs = ['Bull', 'Bear', 'HighVol', 'LowVol'];
-    const name = { Bull: 'Bull years', Bear: 'Bear years', HighVol: 'High-volatility years', LowVol: 'Low-volatility years' };
-    groupedBars(rb, regs, strats, (c, s) => m.get(c + '|' + s)?.MeanSharpe, {
-      h: 280, yfmt: f2, xfmt: (c) => name[c] + ' (' + (m.get(c + '|Proposed')?.Years ?? '') + ')', tfmt: f2,
-      tipHead: (c) => name[c] + ', ' + (m.get(c + '|Proposed')?.Years ?? '') + ' test years', label: (s) => LABEL[s], color: col,
-      extra: (c) => [{ label: 'Proposed avg return', v: pct(m.get(c + '|Proposed')?.MeanAnnReturn) }] });
-  }
-}
-function drawRobust() {
-  const e = rowsOf('experiments'), fp = rowsOf('full_period');
-  const eb = document.getElementById('exp-chart');
-  if (status(eb, ['experiments', 'full_period']) && e && fp) {
-    const ref = fp.find((r) => r.Strategy === 'NIFTY50' && r.CostBps === 25)?.Sharpe;
-    expBars(eb, e, ref);
-  }
-  if (e) fillTable(document.getElementById('exp-table'), e, ['Experiment'],
-    { Experiment: (v) => EXP[v] || v, AnnReturn: pct, AnnVol: pct, Sharpe: f2, Sortino: f2, MaxDrawdown: pct, AvgTurnover: f2,
-      SharpeWinsVs_NIFTY50: String, SharpeWinsVs_EW_Same15: String, OverlapWithPrimary: pct0 },
-    { hl: (r) => r.Experiment === 'primary', sortKey: { SharpeWinsVs_NIFTY50: (r) => parseInt(r.SharpeWinsVs_NIFTY50), SharpeWinsVs_EW_Same15: (r) => parseInt(r.SharpeWinsVs_EW_Same15) } });
-}
-const DRAW = { overview: drawOverview, years: drawYears, portfolio: drawPortfolio, stats: drawStats, robustness: drawRobust };
+const DRAW = { overview: drawOverview, years: drawYears, portfolio: drawPortfolio };
 
 const tabs = [...document.querySelectorAll('.fx-tab')];
 function showTab(id, link = true) {

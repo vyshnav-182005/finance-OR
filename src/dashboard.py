@@ -4,7 +4,7 @@
     python src/dashboard.py --no-open  # rebuild only
 
 Run after experiments.py. Every table the page shows is computed here from
-results/runs/primary (+ results/clustering, results/experiments_summary.csv) and embedded
+results/runs/primary (+ results/clustering) and embedded
 in src/dashboard_template.html together with d3 (src/vendor), so the output is one file
 that works offline in any browser. Cost-dependent tables are computed for every rate in
 backtest.cost_rates_sensitivity and tagged CostBps (basis points per unit turnover), so the
@@ -38,7 +38,7 @@ def build_data():
     port = pd.read_csv(d / "portfolios.csv")
     m = d / "metrics"
 
-    full, pw, weekly = [], [], []
+    full, pw, weekly, ys = [], [], [], []
     for c in cfg["backtest"]["cost_rates_sensitivity"]:
         bps = int(round(c * 1e4))
         net = apply_costs(gross, win, c)
@@ -48,12 +48,17 @@ def build_data():
                          "AvgTurnover": float(to.mean()) if to is not None else 0.0})
         pw.append(per_window(net, rf).assign(CostBps=bps))
         wealth = (1 + net[STRATS]).cumprod()
+        # Proposed portfolio value at the start of each test year per 1 invested in Jan 2000
+        # (before that year's rebalancing cost); the page scales it by the amount entered.
+        ys.append(wealth.Proposed.shift(fill_value=1.0).groupby(wealth.index.year).first()
+                  .rename_axis("TestYear").reset_index(name="Start").assign(CostBps=bps))
         dd = -(1 - wealth / wealth.cummax())
         wk = wealth.resample("W-FRI").last().join(dd.resample("W-FRI").min().add_suffix("_DD")).dropna()
         weekly.append(wk.reset_index().assign(CostBps=bps, Date=lambda x: x.Date.dt.strftime("%Y-%m-%d")))
     dump("full_period", pd.DataFrame(full))
     dump("per_window", pd.concat(pw))
     dump("wealth_weekly", pd.concat(weekly))
+    dump("year_start", pd.concat(ys))
 
     # holdings of the proposed portfolio with each stock's realised test-year return
     R = load_data(cfg)["R"]
@@ -71,11 +76,7 @@ def build_data():
     dump("cluster_profiles", prof.assign(Key=prof.TestYear.astype(str) + "-" + prof.Cluster.astype(str)))
     kd = pd.read_csv(ROOT / "results/clustering/k_diagnostics.csv")
     dump("k_diagnostics", kd.assign(Key=kd.TestYear.astype(str) + "-" + kd.K.astype(str)))
-    dump("comparisons", pd.read_csv(m / "comparisons.csv").assign(Key=lambda x: x.Baseline + "-" + x.Metric))
     dump("random_percentile", pd.read_csv(m / "random_percentile.csv"))
-    reg = pd.read_csv(m / "regimes.csv")
-    dump("regimes", reg.assign(Key=reg.Regime + "-" + reg.Strategy))
-    dump("experiments", pd.read_csv(ROOT / "results/experiments_summary.csv"))
     return data
 
 
